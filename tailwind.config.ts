@@ -22,7 +22,9 @@ const config: Config = {
         'highlight-active': '#FDE047',
       },
       fontFamily: {
-        arabic: ['Traditional Arabic', 'Arabic Typesetting', 'Times New Roman', 'serif'],
+        tajawal: ['var(--font-tajawal)', 'Tajawal', 'Traditional Arabic', 'sans-serif'],
+        arabic:  ['Traditional Arabic', 'Arabic Typesetting', 'Times New Roman', 'serif'],
+        math:    ['Georgia', 'Times New Roman', 'serif'],
       },
     },
   },

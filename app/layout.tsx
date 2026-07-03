@@ -1,6 +1,14 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Tajawal } from 'next/font/google'
 import './globals.css'
+
+const tajawal = Tajawal({
+  subsets: ['arabic', 'latin'],
+  weight: ['400', '500', '700', '800'],
+  variable: '--font-tajawal',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'مكتبة القراءة العميقة',
@@ -13,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ar" dir="rtl">
-      <body className="min-h-screen bg-paper text-ink font-arabic">
+    <html lang="ar" dir="rtl" className={tajawal.variable}>
+      <body className="min-h-screen bg-paper text-ink font-tajawal">
         <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur border-b border-rule">
           <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
             <Link

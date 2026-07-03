@@ -3,6 +3,23 @@ import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import type { Metadata } from 'next'
 import ArticleClient from './ArticleClient'
+import Why12Table   from '@/components/viz/Why12Table'
+import StringVis    from '@/components/viz/StringVis'
+import ThreeMeans   from '@/components/viz/ThreeMeans'
+import ScaleBuilder from '@/components/viz/ScaleBuilder'
+import CommaVis     from '@/components/viz/CommaVis'
+import MathBlock    from '@/components/viz/MathBlock'
+import AestheticNote from '@/components/viz/AestheticNote'
+
+const MDX_COMPONENTS = {
+  Why12Table,
+  StringVis,
+  ThreeMeans,
+  ScaleBuilder,
+  CommaVis,
+  MathBlock,
+  AestheticNote,
+}
 
 interface PageProps {
   params: { slug: string }
@@ -27,7 +44,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
   return (
     <ArticleClient slug={params.slug} meta={article.meta}>
-      <MDXRemote source={article.content} />
+      <MDXRemote source={article.content} components={MDX_COMPONENTS} />
     </ArticleClient>
   )
 }
