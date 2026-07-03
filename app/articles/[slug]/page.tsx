@@ -3,13 +3,18 @@ import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import type { Metadata } from 'next'
 import ArticleClient from './ArticleClient'
-import Why12Table   from '@/components/viz/Why12Table'
-import StringVis    from '@/components/viz/StringVis'
-import ThreeMeans   from '@/components/viz/ThreeMeans'
-import ScaleBuilder from '@/components/viz/ScaleBuilder'
-import CommaVis     from '@/components/viz/CommaVis'
-import MathBlock    from '@/components/viz/MathBlock'
-import AestheticNote from '@/components/viz/AestheticNote'
+import Why12Table      from '@/components/viz/Why12Table'
+import StringVis       from '@/components/viz/StringVis'
+import ThreeMeans      from '@/components/viz/ThreeMeans'
+import ScaleBuilder    from '@/components/viz/ScaleBuilder'
+import CommaVis        from '@/components/viz/CommaVis'
+import MathBlock       from '@/components/viz/MathBlock'
+import AestheticNote   from '@/components/viz/AestheticNote'
+import IrrationalProof from '@/components/viz/IrrationalProof'
+import SqrtGrid        from '@/components/viz/SqrtGrid'
+import PolygonExhaustion from '@/components/viz/PolygonExhaustion'
+import GeometricAlgebra from '@/components/viz/GeometricAlgebra'
+import SexagesimalVis  from '@/components/viz/SexagesimalVis'
 
 const MDX_COMPONENTS = {
   Why12Table,
@@ -19,6 +24,11 @@ const MDX_COMPONENTS = {
   CommaVis,
   MathBlock,
   AestheticNote,
+  IrrationalProof,
+  SqrtGrid,
+  PolygonExhaustion,
+  GeometricAlgebra,
+  SexagesimalVis,
 }
 
 interface PageProps {
