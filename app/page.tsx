@@ -1,16 +1,23 @@
 import Link from 'next/link'
+import { getArticleList } from '@/lib/articles'
 
-const articles = [
-  {
-    slug: 'pythagoras-monochord',
-    title: 'فيثاغورس والوتر المشدود',
-    description: 'رحلة عميقة في اكتشاف الأعداد الموسيقيَّة — بين نظرة الإغريق ونظرة العلم الحديث، وما أبدع كلٌّ منهما وما أخفق',
-    author_style: 'أسلوب أبي حيان التوحيدي',
-    readTime: '٣٥ دقيقة',
-  },
-]
+function estimateReadTime(wordCount: number): string {
+  const minutes = Math.ceil(wordCount / 200)
+  if (minutes <= 5)  return `${minutes} دقائق`
+  if (minutes <= 10) return `${minutes} دقائق`
+  return `${minutes} دقيقة`
+}
+
+const READ_TIMES: Record<string, string> = {
+  'pythagoras-monochord': '٣٥ دقيقة',
+  'hippasus-irrational':  '٢٥ دقيقة',
+  'eudoxus-exhaustion':   '٢٠ دقيقة',
+  'babylonian-sexagesimal': '٢٠ دقيقة',
+}
 
 export default function HomePage() {
+  const articles = getArticleList()
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       {/* Page header */}
@@ -32,21 +39,25 @@ export default function HomePage() {
             className="bg-surface border border-rule rounded-xl p-6 flex flex-col gap-4 hover:shadow-md transition-shadow"
           >
             {/* Author style chip */}
-            <span className="self-start text-xs font-medium text-greek bg-greek-light px-2.5 py-1 rounded-full border border-greek/20">
-              {article.author_style}
-            </span>
+            {article.author_style && (
+              <span className="self-start text-xs font-medium text-greek bg-greek-light px-2.5 py-1 rounded-full border border-greek/20">
+                {article.author_style}
+              </span>
+            )}
 
             <h2 className="text-xl font-bold text-ink leading-snug">
               {article.title}
             </h2>
 
-            <p className="text-ink-mid text-sm leading-relaxed flex-1">
-              {article.description}
-            </p>
+            {article.description && (
+              <p className="text-ink-mid text-sm leading-relaxed flex-1">
+                {article.description}
+              </p>
+            )}
 
             <div className="flex items-center justify-between pt-2 border-t border-rule">
               <span className="text-xs text-ink-lt">
-                وقت القراءة: {article.readTime}
+                وقت القراءة: {READ_TIMES[article.slug] ?? '٢٠ دقيقة'}
               </span>
               <Link
                 href={`/articles/${article.slug}`}
