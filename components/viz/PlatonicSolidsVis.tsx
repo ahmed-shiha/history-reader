@@ -139,7 +139,7 @@ export default function PlatonicSolidsVis() {
                 <th className="px-3 py-3 text-center font-semibold">الزاوية</th>
                 <th className="px-3 py-3 text-center font-semibold">عدد الوجوه في الرأس</th>
                 <th className="px-3 py-3 text-center font-semibold">مجموع الزوايا</th>
-                <th className="px-3 py-3 text-center font-semibold">< ٣٦٠°؟</th>
+                <th className="px-3 py-3 text-center font-semibold">أقل من ٣٦٠°؟</th>
                 <th className="px-3 py-3 text-right font-semibold">النتيجة</th>
               </tr>
             </thead>
