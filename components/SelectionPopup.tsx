@@ -9,6 +9,7 @@ interface PopupState {
   sectionHeading: string | null
   charStart: number
   charEnd: number
+  isBelow: boolean
 }
 
 interface SelectionPopupProps {
@@ -53,6 +54,7 @@ const POPUP_INITIAL: PopupState = {
   sectionHeading: null,
   charStart: 0,
   charEnd: 0,
+  isBelow: false,
 }
 
 export default function SelectionPopup({
@@ -102,11 +104,20 @@ export default function SelectionPopup({
     const { start, end } = getCharOffset(range, articleEl)
     const heading = getNearestHeading(range.commonAncestorContainer)
 
-    // Position above the selection, centred horizontally.
-    // rect coords are viewport-relative; we use position:fixed so no scrollY needed.
+    // On touch devices the native copy/paste bar occupies the space above the
+    // selection, so we place our popup below the selection instead.
+    const isTouch = navigator.maxTouchPoints > 0
     const popupWidth = 180
     const x = rect.left + rect.width / 2 - popupWidth / 2
-    const y = rect.top - 48 // 48px above selection top
+    const popupHeight = 44 // approximate height of our popup
+    const yAbove = rect.top - popupHeight - 8
+    const yBelow = rect.bottom + 8
+    // Place below on touch; fall back to above on desktop.
+    // If above would clip the top of the viewport, also go below.
+    const isBelow = isTouch || yAbove < 8
+    const y = isBelow
+      ? Math.min(yBelow, window.innerHeight - popupHeight - 8)
+      : yAbove
 
     setPopup({
       visible: true,
@@ -116,6 +127,7 @@ export default function SelectionPopup({
       sectionHeading: heading,
       charStart: start,
       charEnd: end,
+      isBelow,
     })
   }, [articleRef, hidePopup])
 
@@ -125,8 +137,10 @@ export default function SelectionPopup({
 
   const handlePointerUp = useCallback(() => {
     isPointerDown.current = false
-    // Small delay lets the browser finalise the selection
-    setTimeout(evaluateSelection, 10)
+    // On touch, wait longer so the native copy bar settles first,
+    // letting us measure the final rect before positioning.
+    const delay = navigator.maxTouchPoints > 0 ? 120 : 10
+    setTimeout(evaluateSelection, delay)
   }, [evaluateSelection])
 
   const handleSelectionChange = useCallback(() => {
@@ -188,17 +202,32 @@ export default function SelectionPopup({
           <span>إضافة ملاحظة</span>
         </button>
       </div>
-      {/* Caret pointer */}
-      <div
-        className="absolute left-1/2 -translate-x-1/2 top-full"
-        style={{
-          width: 0,
-          height: 0,
-          borderLeft: '6px solid transparent',
-          borderRight: '6px solid transparent',
-          borderTop: '6px solid #D8CEBC',
-        }}
-      />
+      {/* Caret pointer — points toward the selection */}
+      {popup.isBelow ? (
+        // Popup is below selection: caret at top pointing up
+        <div
+          className="absolute left-1/2 -translate-x-1/2 bottom-full"
+          style={{
+            width: 0,
+            height: 0,
+            borderLeft: '6px solid transparent',
+            borderRight: '6px solid transparent',
+            borderBottom: '6px solid #D8CEBC',
+          }}
+        />
+      ) : (
+        // Popup is above selection: caret at bottom pointing down
+        <div
+          className="absolute left-1/2 -translate-x-1/2 top-full"
+          style={{
+            width: 0,
+            height: 0,
+            borderLeft: '6px solid transparent',
+            borderRight: '6px solid transparent',
+            borderTop: '6px solid #D8CEBC',
+          }}
+        />
+      )}
     </div>
   )
 }
