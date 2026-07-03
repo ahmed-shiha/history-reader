@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #1A1008;
+  --paper: #F8F4EE;
+  --rule: #D8CEBC;
+  --greek: #7A4B1C;
+  --modern: #26527A;
+}
+
+html {
+  direction: rtl;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Traditional Arabic', 'Arabic Typesetting', 'Times New Roman', serif;
+}
+
+/* Article prose styles */
+.article-prose h2 {
+  @apply text-xl font-bold mt-16 mb-4 pb-3 border-b border-rule text-ink;
+}
+.article-prose h3 {
+  @apply text-lg font-bold mt-10 mb-3 text-greek;
+}
+.article-prose p {
+  @apply my-5 leading-loose text-justify;
+}
+.article-prose blockquote {
+  @apply border-r-4 border-greek bg-greek-light/50 px-5 py-3 my-6 italic text-ink-mid;
+}
+.article-prose ul {
+  @apply list-disc pr-6 my-4 space-y-1;
+}
+.article-prose strong {
+  @apply font-bold text-ink;
+}
+
+/* Text highlight marks */
+mark[data-note-id] {
+  background: #FEF08A;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 1px 0;
+  transition: background 0.15s;
+}
+mark[data-note-id]:hover {
+  background: #FDE047;
+}
+mark[data-note-id].active {
+  background: #FDE047;
+  outline: 2px solid #CA8A04;
+  outline-offset: 1px;
+}
