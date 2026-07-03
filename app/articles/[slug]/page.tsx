@@ -15,6 +15,7 @@ import SqrtGrid        from '@/components/viz/SqrtGrid'
 import PolygonExhaustion from '@/components/viz/PolygonExhaustion'
 import GeometricAlgebra from '@/components/viz/GeometricAlgebra'
 import SexagesimalVis  from '@/components/viz/SexagesimalVis'
+import PlatonicSolidsVis from '@/components/viz/PlatonicSolidsVis'
 
 const MDX_COMPONENTS = {
   Why12Table,
@@ -29,6 +30,7 @@ const MDX_COMPONENTS = {
   PolygonExhaustion,
   GeometricAlgebra,
   SexagesimalVis,
+  PlatonicSolidsVis,
 }
 
 interface PageProps {
