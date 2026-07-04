@@ -19,7 +19,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-tajawal), 'Tajawal', 'Traditional Arabic', sans-serif;
-  font-size: 17px;
+  font-size: 20px;
   line-height: 2;
 }
 
