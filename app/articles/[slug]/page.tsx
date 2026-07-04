@@ -1,4 +1,4 @@
-import { getArticle, getAllSlugs } from '@/lib/articles'
+import { getArticle } from '@/lib/articles'
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import type { Metadata } from 'next'
@@ -37,9 +37,7 @@ interface PageProps {
   params: { slug: string }
 }
 
-export async function generateStaticParams() {
-  return getAllSlugs().map((slug) => ({ slug }))
-}
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const article = await getArticle(params.slug)
