@@ -1,6 +1,6 @@
 interface AestheticNoteProps {
   children: React.ReactNode
-  type?: 'beauty' | 'logic' | 'wound'
+  type?: 'beauty' | 'logic' | 'wound' | 'wonder'
   title?: string
 }
 
@@ -8,6 +8,7 @@ const CONFIG = {
   beauty: { color: '#7A4B1C', bg: '#FBF3E5', border: '#C8924A', icon: '✦', label: 'جمالية' },
   logic:  { color: '#26527A', bg: '#EEF3FA', border: '#7AAED4', icon: '◈', label: 'منطق' },
   wound:  { color: '#7A1C1C', bg: '#FDF0F0', border: '#C84A4A', icon: '⚠', label: 'كسر النظام' },
+  wonder: { color: '#2A5C45', bg: '#EEF7F2', border: '#5DAA82', icon: '◎', label: 'عجب' },
 }
 
 export default function AestheticNote({ children, type = 'beauty', title }: AestheticNoteProps) {
