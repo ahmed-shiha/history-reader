@@ -4,13 +4,32 @@ import Link from 'next/link'
 import useSWR from 'swr'
 import type { Note } from '@/lib/types'
 
-// ─── Article title map ────────────────────────────────────────────────────────
-const ARTICLE_TITLES: Record<string, string> = {
-  'pythagoras-monochord': 'فيثاغورس والوتر المشدود',
+// ─── Source label helpers ─────────────────────────────────────────────────────
+// Book chapter keys use the format: "book:bookSlug/chapterSlug"
+function isBookKey(slug: string) {
+  return slug.startsWith('book:')
 }
 
-function getArticleTitle(slug: string): string {
-  return ARTICLE_TITLES[slug] ?? slug
+function getSourceLabel(slug: string): string {
+  if (isBookKey(slug)) {
+    // "book:to-explain-the-world/chapter-1" → "chapter-1"
+    const rest = slug.replace(/^book:/, '')
+    const parts = rest.split('/')
+    return parts[parts.length - 1] ?? rest
+  }
+  return slug
+}
+
+function getSourceHref(slug: string): string {
+  if (isBookKey(slug)) {
+    // "book:to-explain-the-world/chapter-1" → "/books/to-explain-the-world/chapter-1"
+    return `/books/${slug.replace(/^book:/, '')}`
+  }
+  return `/articles/${slug}`
+}
+
+function getSourceIcon(slug: string): string {
+  return isBookKey(slug) ? '📚' : '📄'
 }
 
 function slugToAnchor(heading: string | null): string {
@@ -68,7 +87,7 @@ function NoteCard({
   const [confirmDelete, setConfirmDelete] = useState(false)
 
   const articleAnchor =
-    `/articles/${note.article_slug}` + slugToAnchor(note.section_heading)
+    getSourceHref(note.article_slug) + slugToAnchor(note.section_heading)
 
   const handleDelete = () => {
     if (confirmDelete) {
@@ -236,13 +255,16 @@ export default function NotesPage() {
         <div className="space-y-10">
           {Object.entries(grouped).map(([slug, articleNotes]) => (
             <section key={slug}>
-              {/* Article section header */}
+              {/* Source section header */}
               <div className="flex items-center gap-3 mb-4">
+                <span className="text-base" aria-hidden="true">
+                  {getSourceIcon(slug)}
+                </span>
                 <Link
-                  href={`/articles/${slug}`}
+                  href={getSourceHref(slug)}
                   className="text-base font-bold text-ink hover:text-greek transition-colors"
                 >
-                  {getArticleTitle(slug)}
+                  {getSourceLabel(slug)}
                 </Link>
                 <span className="text-xs text-ink-lt bg-surface px-2 py-0.5 rounded-full border border-rule">
                   {articleNotes.length} ملاحظة

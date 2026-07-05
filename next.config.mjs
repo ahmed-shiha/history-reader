@@ -2,6 +2,7 @@
 const nextConfig = {
   outputFileTracingIncludes: {
     '/articles/[slug]': ['./content/articles/**/*'],
+    '/books/[slug]/[chapter]': ['./content/books/**/*'],
   },
 }
 

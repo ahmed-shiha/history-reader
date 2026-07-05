@@ -31,12 +31,20 @@ export default function RootLayout({
             >
               مكتبة القراءة
             </Link>
-            <Link
-              href="/notes"
-              className="text-sm text-ink-mid hover:text-greek transition-colors px-3 py-1.5 rounded-md hover:bg-greek-light"
-            >
-              الملاحظات
-            </Link>
+            <div className="flex items-center gap-1">
+              <Link
+                href="/books"
+                className="text-sm text-ink-mid hover:text-greek transition-colors px-3 py-1.5 rounded-md hover:bg-greek-light"
+              >
+                الكتب
+              </Link>
+              <Link
+                href="/notes"
+                className="text-sm text-ink-mid hover:text-greek transition-colors px-3 py-1.5 rounded-md hover:bg-greek-light"
+              >
+                الملاحظات
+              </Link>
+            </div>
           </div>
         </nav>
         <main>{children}</main>

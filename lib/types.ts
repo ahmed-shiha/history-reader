@@ -27,3 +27,23 @@ export interface ArticleMeta {
   date: string
   sections: string[]
 }
+
+export interface BookSummary {
+  slug: string
+  book_title: string
+  author: string
+  description: string
+  chapter_count: number
+}
+
+export interface ChapterMeta {
+  slug: string
+  book_slug: string
+  book_title: string
+  author: string
+  title: string
+  description: string
+  date: string
+  order: number
+  sections: string[]
+}
