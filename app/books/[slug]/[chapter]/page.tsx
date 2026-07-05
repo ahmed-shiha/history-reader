@@ -16,6 +16,10 @@ import PolygonExhaustion from '@/components/viz/PolygonExhaustion'
 import GeometricAlgebra  from '@/components/viz/GeometricAlgebra'
 import SexagesimalVis    from '@/components/viz/SexagesimalVis'
 import PlatonicSolidsVis from '@/components/viz/PlatonicSolidsVis'
+import MilesianTheories  from '@/components/viz/MilesianTheories'
+import ZenoParadox       from '@/components/viz/ZenoParadox'
+import AristotleMotion   from '@/components/viz/AristotleMotion'
+import HeliocentricVis   from '@/components/viz/HeliocentricVis'
 
 const MDX_COMPONENTS = {
   Why12Table,
@@ -31,6 +35,10 @@ const MDX_COMPONENTS = {
   GeometricAlgebra,
   SexagesimalVis,
   PlatonicSolidsVis,
+  MilesianTheories,
+  ZenoParadox,
+  AristotleMotion,
+  HeliocentricVis,
 }
 
 interface PageProps {
