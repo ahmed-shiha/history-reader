@@ -134,7 +134,7 @@ export default function ChapterClient({
         articleSlug={noteKey}
       />
 
-      <main className="flex-1 lg:mr-72 px-4 sm:px-8 lg:px-12 py-10">
+      <main className="flex-1 min-w-0 lg:mr-72 px-4 sm:px-8 lg:px-12 py-10">
         <div className="max-w-3xl mx-auto">
           {/* Chapter header */}
           <header className="mb-10 pb-8 border-b border-rule">

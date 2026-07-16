@@ -42,6 +42,22 @@ body {
 .article-prose strong {
   @apply font-bold text-ink;
 }
+.article-prose pre {
+  overflow-x: auto;
+  max-width: 100%;
+  white-space: pre;
+  @apply text-sm my-6 p-4 rounded bg-ink/5 border border-rule;
+}
+.article-prose pre code {
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.article-prose :not(pre) > code {
+  @apply text-sm px-1 rounded bg-ink/10;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
 
 /* Viz component overrides inside article */
 .article-prose table {
