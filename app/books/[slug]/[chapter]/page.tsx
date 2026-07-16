@@ -1,4 +1,4 @@
-import { getChapter } from '@/lib/books'
+import { getChapter, getBookList, getChapterList } from '@/lib/books'
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import type { Metadata } from 'next'
@@ -45,7 +45,17 @@ interface PageProps {
   params: { slug: string; chapter: string }
 }
 
-export const dynamic = 'force-dynamic'
+export async function generateStaticParams() {
+  const books = getBookList()
+  const params: { slug: string; chapter: string }[] = []
+  for (const book of books) {
+    const chapters = getChapterList(book.slug)
+    for (const chapter of chapters) {
+      params.push({ slug: book.slug, chapter: chapter.slug })
+    }
+  }
+  return params
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const result = await getChapter(params.slug, params.chapter)
