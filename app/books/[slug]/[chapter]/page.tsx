@@ -2,6 +2,8 @@ import { getChapter, getBookList, getChapterList } from '@/lib/books'
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import type { Metadata } from 'next'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
 import ChapterClient from './ChapterClient'
 import Why12Table        from '@/components/viz/Why12Table'
 import StringVis         from '@/components/viz/StringVis'
@@ -76,7 +78,17 @@ export default async function ChapterPage({ params }: PageProps) {
       chapterSlug={params.chapter}
       meta={result.meta}
     >
-      <MDXRemote source={result.content} components={MDX_COMPONENTS} />
+      <MDXRemote
+        source={result.content}
+        components={MDX_COMPONENTS}
+        options={{
+          mdxOptions: {
+            format: params.slug === 'ai-concepts' ? 'md' : 'mdx',
+            remarkPlugins: [remarkMath],
+            rehypePlugins: [rehypeKatex],
+          },
+        }}
+      />
     </ChapterClient>
   )
 }

@@ -1,0 +1,212 @@
+---
+slug: chapter-1
+title: "Supervised Fine-Tuning (SFT)"
+book_title: "مفاهيم الذكاء الاصطناعي — مرجع المناظرة"
+author: دليل المناظرة التقنية
+description: كيف بيتحول الـ base model من text predictor لـ assistant — المعادلات والتناقضات والأسئلة العميقة
+date: 2026-07-17
+order: 1
+sections:
+  - الموقف في المناظرة
+  - التاريخ والـ Context
+  - الـ Mechanics الحقيقية
+  - الـ Steelman — أقوى حجة ليه
+  - التناقضات الداخلية
+  - اللي ما بيتقالش
+  - أسئلة المناظرة
+  - الـ Open Problems
+  - مفاهيم متعلقة
+---
+
+## الموقف في المناظرة
+
+في أي نقاش عن alignment وتحويل الـ LLMs من "language predictors" لـ "assistants"، الـ SFT هو دايماً نقطة البداية. الفريق الأول بيقول إن SFT هو الخطوة الأكثر أهمية في الـ pipeline — هو اللي بيعلم النموذج "شكل" الإجابة الصح. الفريق التاني بيرد بأن SFT وحده خطير: بيحفظ الـ surface behavior من غير ما يفهم الـ values الحقيقية — وبيخلق نماذج تبدو aligned بس جوفاء. الملف ده هيخليك تفهم الاتنين وتجادل بعمق.
+
+---
+
+## ١. التاريخ والـ Context
+
+قبل GPT-3 (2020)، الـ language models كانت بتنتج نص بيكمل ما قبله. تديها "اشرح لي نظرية النسبية"، هتكمل بجملة تانية عن النظرية — مش هتجاوب. النماذج كانت text completers مش assistants.
+
+الـ SFT (Supervised Fine-Tuning) هو العملية اللي بتاخد base model وبتدربه على **demonstrations**: examples لسؤال وإجابة مثالية بشرية. الفكرة مأخوذة من Imitation Learning — خلّي النموذج يقلد الـ expert.
+
+أول تطبيق واسع النطاق: InstructGPT ورقة OpenAI 2022. خطوا ثلاث خطوات: SFT، ثم Reward Model، ثم RLHF. بس ما نجح فيها إن الـ SFT وحده كان أحسن من base GPT-3 في human preference — ضخم جداً.
+
+**النقطة المفصلية:** في 2023، Alpaca (Stanford) أثبت إن fine-tuning LLaMA-7B على 52K instruction-following examples (اتولدوا بـ GPT-4) بياخد نموذج "يتكلم" زي ChatGPT — بأقل من $600. ده فتح باب هائل لـ open-source instruction tuning.
+
+---
+
+## ٢. الـ Mechanics الحقيقية
+
+**الـ Setup الأساسي:**
+
+عندك base model بـ parameters $\theta$. عندك dataset من pairs:
+
+$$\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$$
+
+حيث $x_i$ هو الـ instruction/prompt و$y_i$ هو الـ ideal response من إنسان (أو GPT-4 كـ teacher).
+
+الـ objective هو standard cross-entropy على الـ response tokens فقط:
+
+$$\mathcal{L}_{\text{SFT}}(\theta) = -\sum_{i=1}^{N} \sum_{t=1}^{|y_i|} \log P_\theta(y_i^t \mid x_i, y_i^{<t})$$
+
+ملاحظة مهمة: بنحسب الـ loss على $y_i$ فقط — مش على الـ prompt $x_i$. الـ prompt بيدخل في الـ context بس مش جزء من الـ learning signal.
+
+**Instruction Masking:**
+
+في الـ implementation، بتعمل mask على الـ prompt tokens:
+
+```
+Input:  [SYS] You are helpful [/SYS] [USR] ما هي النسبية؟ [/USR] [AST]
+Loss:   [MASK] [MASK] [MASK] ... [MASK] [MASK] ... [COMPUTE HERE] →
+```
+
+يعني الـ model بيتعلم "بعد ما أشوف السؤال ده، الـ ideal response يبدأ بـ..."
+
+**الـ Chat Template:**
+
+كل نموذج عنده format مختلف. LLaMA-3:
+
+```
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+You are a helpful assistant.
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+{prompt}
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+{response}
+<|eot_id|>
+```
+
+**Learning Rate وScheduling:**
+
+الـ SFT بياخد learning rate أصغر بكتير من الـ pre-training:
+- Pre-training: $\sim 3 \times 10^{-4}$
+- SFT: $\sim 2 \times 10^{-5}$ لـ full fine-tuning, أو $\sim 3 \times 10^{-4}$ لـ LoRA
+
+لو استخدمت learning rate كبيرة في الـ SFT، هيحصل **catastrophic forgetting** — النموذج بيفقد الـ knowledge اللي اتعلمه في الـ pre-training.
+
+**Data Quality > Data Quantity:**
+
+الـ "Lima" paper (2023) أثبت إن 1000 example عالية الجودة بتـ outperform 50,000 example عادية. ده الـ "LIMA principle" — Less Is More for Alignment.
+
+الـ Quality بيتقاس بـ:
+1. **Diversity**: مش بس Q&A — coding، reasoning، creative writing، roleplay، refusal
+2. **Accuracy**: الإجابة صح فعلاً
+3. **Format**: واضح، منظم، ما فيهوش hallucination
+
+---
+
+## ٣. الـ Steelman — أقوى حجة ليه
+
+أقوى حجة للـ SFT هي إنها الطريقة الوحيدة اللي شغالة consistently وquantifiably.
+
+الـ base model بيعرف كل حاجة تقريباً — علوم، لغات، كود، تاريخ. المشكلة مش في الـ knowledge، المشكلة في الـ format والـ behavior. الـ SFT بتعلم النموذج "format the knowledge you already have in a way that's useful to humans."
+
+الـ دليل الأقوى هو Alpaca و OpenHermes و مئات النماذج الـ open-source. نموذج بـ 7B parameters بعد SFT بيبقى أحسن في real-world tasks من GPT-3 (175B parameters) من غير SFT. الـ scaling على الـ data أسرع بكثير من الـ scaling على الـ model size لما الـ task هو instruction-following.
+
+من الناحية النظرية، الـ SFT بتعمل شيء واضح ومفهوم: maximum likelihood estimation على expert demonstrations. ده mathematically clean وempirical results بتبان على الفور على benchmarks. ما فيش black box زي الـ RLHF — بتقوله بالظبط ايه الـ target distribution.
+
+---
+
+## ٤. التناقضات الداخلية
+
+**التناقض الأول: Imitation بدون فهم**
+
+الـ SFT بتحوّل النموذج لـ imitator. لو الـ demonstrations عندها bias أو errors، النموذج هيتعلمهم. أكتر من كده: النموذج ممكن يتعلم يـ"يتظاهر" بالإجابة الصحيحة من غير ما يعرف ليه هي صح.
+
+تجربة فكرية: لو دربت طفل على الإجابة الصحيحة لكل سؤال بس ما شرحتلوش ليه — هيقدر يجاوب أسئلة جديدة؟ النموذج SFT بيعاني من نفس المشكلة. عند out-of-distribution prompts — أسئلة ما شافهاش في الـ training — performance بتنهار.
+
+**التناقض التاني: Sycophancy كـ Emergent Behavior**
+
+لما الـ demonstrations بتتجمع من humans، الـ humans naturally بيكتبوا responses اللي يعجبوا أصدقاءهم. الـ data بتيجي biased ناحية الـ agreeable, confident, flattering responses.
+
+النموذج بيتعلم إن "القصيدة اللي بكتبتها جميلة!" بياخد affirmation أكتر من "القصيدة فيها مشاكل." ده بيخلق sycophancy — والـ SFT وحده ما عندوش mechanism يصحح ده.
+
+**التناقض التالت: Catastrophic Forgetting وCatastrophic Overfitting**
+
+لو الـ SFT data صغيرة (أقل من بضعة آلاف examples) والـ fine-tuning aggressive، النموذج بيـ "overfit" على الـ distribution وبيفقد general capabilities.
+
+لو الـ SFT data كبيرة بس مش diverse، النموذج بيبقى كويس على الـ training distribution بس بيـ "forget" tasks خارجها. ده tradeoff حقيقي: أكتر SFT، أكتر alignment — بس أقل general capability.
+
+---
+
+## ٥. اللي ما بيتقالش
+
+**المشكلة الأولى: من يكتب الـ Demonstrations؟**
+
+الـ SFT بتفترض إن عندك "expert" بيكتب الـ ideal responses. بس في الواقع:
+- في OpenAI الـ contractors كانوا Kenyan workers بـ $3/hour
+- الـ agreement بين annotators على "ideal response" غالباً أقل من 70%
+- الـ annotators بيتأثروا بـ word count، formatting، confidence tone — مش accuracy
+
+ده معناه إن الـ SFT بتعكس **human annotation artifacts** مش human values. النموذج بيتعلم يكتب "responses that look good to the average Mechanical Turk worker."
+
+**المشكلة التانية: الـ Exposure Bias**
+
+في الـ inference، النموذج بيولد token بعد token بناءً على توكنات ولدها هو. بس في الـ training، الـ input في كل step هو الـ ground truth response مش الـ model's own output.
+
+ده الـ "teacher forcing" problem. النموذج ما شافش حالة "ولدت token غلط وبعدين محتاج أكمل." في الـ inference، لو ولد token غلط، الباقي كله بيـ "drift."
+
+**المشكلة التالتة: الـ Format Bias**
+
+النماذج بعد SFT بتميل لـ responses بنفس الـ structure: intro → bullet points → conclusion. ده لأن الـ training data كانت كده. لو المستخدم طلب شيء مختلف، النموذج ممكن يقاوم لأن الـ SFT hardwired فيه الـ "preferred format."
+
+**المشكلة الرابعة: Data Leakage وBenchmark Overfitting**
+
+بعض الـ SFT datasets اتبنت من web data اللي فيها benchmarks متضمنة. نموذج اتدرب على Wikipedia ممكن يشوف MMLU questions وأجوبتها في الـ pre-training. الـ SFT بعدين بتـ "activate" الـ route للإجابة الصح بشكل أسرع — مش لأن النموذج اتحسن، لكن لأن الإجابة موجودة في memory.
+
+---
+
+## ٦. أسئلة المناظرة
+
+**السؤال الأول: هل SFT كافي لعمل model آمن؟**
+
+الإجابة السطحية (Level 1): لا، محتاج RLHF وDPO وConstitutional AI.
+
+الإجابة الأعمق (Level 2): السؤال غلط. الـ SFT مش safety training — هي instruction-following training. بتعلم النموذج يتبع شكل الإجابة، مش يقرر إيه الـ safe behavior. الـ SFT على demonstrations اللي فيها refusals بيخلي النموذج يتعلم "في أسئلة معينة، الإجابة هي رفض مؤدب." بس ده easily circumvented بـ jailbreaks لأن النموذج بيتعلم الـ pattern مش الـ principle. الـ safety الحقيقية تحتاج understanding of values — وده ما بتوفره الـ SFT.
+
+---
+
+**السؤال التاني: ليه النماذج الصغيرة (7B) بعد SFT بتـ outperform نماذج أكبر من غير SFT؟**
+
+الإجابة السطحية (Level 1): الـ SFT بتعلم النموذج يستخدم knowledge عنده.
+
+الإجابة الأعمق (Level 2): الـ SFT بتحل **format mismatch problem**. الـ 175B base model عنده معرفة أكبر بكثير من الـ 7B — بس بيولد responses زي الـ web text اللي تدرب عليه: paragraphs، incomplete sentences، تحولات موضوع مفاجئة. الـ 7B بعد SFT اتعلم format موحد ومتوقع. الـ human preference بتقيّم الـ format والـ helpfulness الظاهرة قبل الـ actual knowledge. ده ما بيثبتش إن الـ 7B أذكى — بيثبت إن الـ evaluation metrics بتتأثر بالـ presentation.
+
+---
+
+## ٧. "هيقولك X" — ردودك الأعمق
+
+**هيقولك: "SFT is all you need — Meta's Llama models بيثبتوا ده."**
+
+الرد: Llama models بتستخدم SFT كخطوة أولى — مش الوحيدة. LLaMA-3-Instruct استخدم SFT + DPO + RLHF. اللي بيقدر يقوله هو إن SFT وحده بيعطي results معقولة. بس "معقولة" مختلفة عن "aligned" أو "safe" أو "optimal." الـ SFT-only models بتظهر sycophancy أعلى، refusal rates منخفضة على harmful content، وperformance أقل على complex multi-step reasoning. Meta نفسها تبنى layers فوق الـ SFT.
+
+**هيقولك: "LIMA paper أثبت إن 1000 example كافية."**
+
+الرد: LIMA أثبت إن 1000 example عالية الجودة **كافية لـ instruction following على standard prompts**. المقارنة كانت مع Alpaca (52K) وDolly (15K). لكن الـ paper نفسه اعترف إن الـ model ضعيف على out-of-distribution prompts وعلى complex reasoning. الـ "1000 examples" claim صح في scope محدود جداً. لو عايز coverage واسعة، diversity حقيقية، وrobustness — محتاج أكتر بكتير.
+
+---
+
+## ٨. الـ Open Problems
+
+**المشكلة الأولى: Scalable Oversight**
+
+كيف نتأكد إن الـ demonstrations صح لما المشكلة معقدة جداً لأي إنسان يفهمها؟ (مثلاً: mathematical proofs أو complex code.) الـ SFT بتفترض إن الـ teacher أذكى من الـ student في كل task. مع النماذج الكبيرة، ده مش صح دايماً.
+
+**المشكلة التانية: Continual SFT**
+
+لما النموذج بيتحدث (SFT runs كتير بمرور الوقت)، الـ distributions بتتغير وبيحصل forgetting. إزاي نعمل SFT بشكل مستمر من غير ما نخسر الـ previous alignment؟
+
+**المشكلة التالتة: Synthetic Data Quality**
+
+مع الاعتماد المتزايد على GPT-4 كـ teacher (الـ model بيدرب على outputs من نموذج تاني)، فيه سؤال نظري مهم: هل الـ student ممكن يتجاوز الـ teacher؟ نظرياً لأ — لو بتتعلم من X، أفضل ما تعمله هو تقريب X. ده بيخلق ceiling مرتبط بالـ teacher quality.
+
+---
+
+## مفاهيم متعلقة
+
+- **Reward Model (RM)** — الخطوة التالية: بعد الـ SFT، بنبني Reward Model يقيّم الـ responses
+- **RLHF** — Full Pipeline: SFT هو أول خطوة في الـ RLHF pipeline
+- **DPO** — بديل للـ RLHF يبني مباشرة على الـ SFT model
+- **LoRA** — الطريقة الأكتر استخداماً لعمل SFT من غير fine-tuning full model
+- **Sycophancy** — المشكلة الرئيسية اللي بتنشأ من الـ SFT data bias

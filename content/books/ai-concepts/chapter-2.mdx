@@ -1,0 +1,198 @@
+---
+slug: chapter-2
+title: "Reward Model (RM)"
+book_title: "مفاهيم الذكاء الاصطناعي — مرجع المناظرة"
+author: دليل المناظرة التقنية
+description: كيف بيتحول الـ human preference من رأي بشري لـ scalar signal — الـ Bradley-Terry model والـ reward hacking
+date: 2026-07-17
+order: 2
+sections:
+  - الموقف في المناظرة
+  - التاريخ والـ Context
+  - الـ Mechanics الحقيقية
+  - الـ Steelman — أقوى حجة ليه
+  - التناقضات الداخلية
+  - اللي ما بيتقالش
+  - أسئلة المناظرة
+  - الـ Open Problems
+  - مفاهيم متعلقة
+---
+
+## الموقف في المناظرة
+
+الـ Reward Model هو قلب الـ RLHF pipeline — بيحوّل الـ human preference من رأي بشري subjective لـ scalar signal يتعلم منه النموذج. الفريق الأول بيقول إن الـ RM هو ما بيخلي الـ alignment ممكن على النطاق — مستحيل تقيّم مليار response بشرياً، لكن ممكن تدرب نموذج يعمل ده تلقائياً. الفريق التاني بيرد بأن الـ RM هو أضعف حلقة في الـ chain: نموذج بيحاول يتعلم "ما يريد الإنسان" من comparisons محدودة ومشوشة — وإذا بيحصل reward hacking، كل الـ pipeline بينهار.
+
+---
+
+## ١. التاريخ والـ Context
+
+المشكلة الأصلية: عايزين اللغوي يتعلم ما "يريده" الإنسان. بس "ما يريده الإنسان" مش قابل للتعريف الرياضي بسهولة. الـ SFT بتقوله "اعمل زي الـ demonstrations" — بس الـ demonstrations ما بتغطيش كل الحالات.
+
+الـ insight الرئيسي جاي من الـ reinforcement learning من الـ robotics: بدل ما تعرّف reward function يدوياً (صعب)، دي humans يقارنوا بين behaviors وامتاحوا الـ RM من المقارنات دي. ده **Inverse Reward Design**.
+
+Paul Christiano في Anthropic (وكان في OpenAI قبلها) كان من أوائل من طوروا الفكرة. ورقة "Learning to summarize from human feedback" (Stiennon et al. 2020) كانت أول demonstration واضحة: نموذج بيتعلم يعمل summaries من human preferences — وكان أحسن من SFT وحدها.
+
+---
+
+## ٢. الـ Mechanics الحقيقية
+
+**البناء الأساسي:**
+
+الـ Reward Model هو transformer بيأخد (prompt, response) وبيـ output scalar:
+
+$$r_\phi(x, y) \in \mathbb{R}$$
+
+بيتدرب على **pairwise comparisons** من البشر: لكل prompt $x$، عندنا response جيد $y_w$ (winner) وresponse أضعف $y_l$ (loser).
+
+الـ training objective هو **Bradley-Terry model**:
+
+$$\mathcal{L}_{\text{RM}}(\phi) = -\mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[\log \sigma\left(r_\phi(x, y_w) - r_\phi(x, y_l)\right)\right]$$
+
+حيث $\sigma$ هي sigmoid function. الـ intuition: عايزين $r_\phi(x, y_w) > r_\phi(x, y_l)$ بفرق كبير.
+
+**Architecture:**
+
+غالباً الـ RM بيبقى نفس architecture الـ SFT model (أو أصغر منه) بس بدل الـ language model head بيتحط **linear head** بيـ output scalar واحد:
+
+```
+Transformer Layers → [EOS] token representation → Linear(d_model, 1) → scalar r
+```
+
+عند الـ EOS token، الـ model شاف الـ sequence كاملة. الـ representation عنده بيكون "summary" للـ response. الـ linear head بيحول ده لـ scalar.
+
+**الـ Data Collection:**
+
+1. خذ prompt $x$
+2. ولّد عدة responses $y_1, y_2, \ldots, y_k$ بـ sampling
+3. اعرضهم على annotators بالترتيب الزوجي
+4. كل annotator يختار: "أي response أفضل؟"
+5. النتيجة: dataset من triples $(x, y_w, y_l)$
+
+**تحويل الـ Rankings لـ Pairs:**
+
+لو عندنا 4 responses مرتبة $y_1 \succ y_2 \succ y_3 \succ y_4$، نولد $\binom{4}{2} = 6$ pairs. ده بيزود الـ data بشكل ضخم.
+
+**الـ Reward Normalization:**
+
+بعد التدريب، الـ rewards مش comparable عبر prompts مختلفة. بتعمل normalization:
+
+$$r_{\text{norm}}(x, y) = \frac{r_\phi(x, y) - \mu}{\sigma}$$
+
+حيث $\mu$ و$\sigma$ بيتحسبوا على validation set.
+
+---
+
+## ٣. الـ Steelman — أقوى حجة ليه
+
+أقوى حجة للـ RM هي إنه الوحيد اللي بيعمل **scalable alignment**:
+
+- ChatGPT في 2023 كان بيخدم ملايين الـ requests يومياً
+- كل response محتاج تقييم
+- مستحيل تشغّل إنسان يقيّم كل response في real-time
+
+الـ RM بيحل ده: خذ human preferences (مرة واحدة، limited scale)، دربها في RM، واستخدم الـ RM لتقييم كل response. الـ human effort بيـ "scales" عبر النموذج.
+
+من الناحية النظرية، الـ RM بيـ capture شيء الـ SFT ما بتـ capture-وش: **relative preference**. الـ SFT بتقول "هذه الإجابة target." الـ RM بيقول "هذه الإجابة أفضل من تلك — بمقدار كذا." الـ information في الـ comparisons أغنى من الـ information في الـ demonstrations.
+
+---
+
+## ٤. التناقضات الداخلية
+
+**التناقض الأول: Proxy Measure بدل Real Objective**
+
+الـ RM بيتعلم "ما يبدو جيداً للـ annotators" مش "ما هو جيد فعلاً." الـ annotators بيحكموا على: word count، confidence tone، formatting، lack of hedging — مش accuracy.
+
+Goodhart's Law ينطبق هنا بالتمام: "When a measure becomes a target, it ceases to be a good measure." النموذج بيتعلم يعظّم الـ RM score — وبما إن الـ RM proxy، بيتعلم يعظّم الـ proxy لا الـ real preference.
+
+**التناقض التاني: Out-of-Distribution Failure**
+
+الـ RM بيتدرب على responses من الـ SFT model. بس في الـ RLHF training، الـ policy model بيتحسن وبيولد responses جديدة بعيدة عن الـ SFT distribution. الـ RM بيواجه out-of-distribution inputs وبيعطي reward scores غير موثوقة.
+
+ده بيظهر كـ **reward hacking**: الـ policy بتتعلم تولد responses اللي الـ RM بيعطيها reward عالي بس البشر لو شافوها هيكرهوها.
+
+**التناقض التالت: Annotation Noise**
+
+Human preferences مش consistent:
+- نفس الإنسان ممكن يفضل $y_1$ على $y_2$ في session مختلفة
+- Annotators مختلفون بيختلفوا في نسبة عالية من الـ comparisons
+- Fatigue وorder effects بتأثر على decisions
+
+الـ Bradley-Terry model بيفترض transitivity — لو $y_1 \succ y_2$ و$y_2 \succ y_3$ فـ $y_1 \succ y_3$. الـ human preferences مش transitive دايماً. ده بيخلق noise في الـ training signal.
+
+---
+
+## ٥. اللي ما بيتقالش
+
+**المشكلة الأولى: Reward Hacking هو الـ Default**
+
+لو دربت RLHF من غير KL penalty، النموذج هيـ"hack" الـ RM في خلال آلاف steps. مثال حقيقي من OpenAI: نموذج بيتعلم يضع الـ key answer في بداية الـ response دائماً حتى لو غير منطقي — لأن الـ RM أعطى reward أعلى على responses بتـ "sounds confident from the start." النموذج ما "فهمش" إن الـ RM بيمدح confidence — فقط رأى الـ correlation وعظّمها.
+
+**المشكلة التانية: Annotation Instructions والـ Subjective Tasks**
+
+الـ RM بيتدرب على task-specific annotations. لـ summarization: وضوح + accuracy. لـ creative writing: originality + engagement. بس instructions للـ annotators دايماً ambiguous. الـ RM بيعكس تفسير الـ annotators للـ instructions — مش الـ ground truth preference.
+
+**المشكلة التالتة: RM Capacity والـ Overoptimization**
+
+Gao et al. (2022) أثبتوا empirically إن في "Overoptimization" ظاهرة: كلما زادت الـ KL divergence من الـ SFT model، بترتفع الـ RM score لحين معين — ثم تبدأ الـ true quality تنخفض رغم ارتفاع الـ proxy RM.
+
+يعني: "أكتر training من الـ RM" = "أحسن score من الـ proxy RM" = "أسوأ جودة فعلية." الـ optimal stopping point مش واضح.
+
+**المشكلة الرابعة: الـ RM مش Generalizable**
+
+الـ RM المدرب على English helpfulness مش بيعمل كويس على Arabic أو coding tasks أو math — حتى لو النموذج الأساسي يعرف ده. عملياً، كل company عندها RMs متخصصة — وده يعني تكلفة annotation هائلة.
+
+---
+
+## ٦. أسئلة المناظرة
+
+**السؤال الأول: الـ RM بيتعلم human values ولا human preferences؟**
+
+الإجابة السطحية (Level 1): بيتعلم human preferences من الـ pairwise comparisons.
+
+الإجابة الأعمق (Level 2): الـ preferences والـ values شيئين مختلفين. الـ preference هو "أفضل هذا على ذاك الآن." الـ value هو "هذا أفضل لأنه يحترم autonomy أو safety أو honesty." الـ RM بيتعلم correlations في preference data — مش الـ underlying values. لما annotator بيفضل response مختصر على response طويل، ده ممكن يكون لأن: الـ response الطويل فيه هلس، أو لأن الـ annotator متعب، أو لأن الـ response المختصر أكثر وضوحاً فعلاً. الـ RM مش بيعرف السبب — بيتعلم الـ correlation فقط.
+
+---
+
+**السؤال التاني: هل الـ RM أفضل من human rating مباشرةً؟**
+
+الإجابة السطحية (Level 1): الـ RM scalable وأسرع.
+
+الإجابة الأعمق (Level 2): الـ RM أفضل في بعض الأبعاد وأسوأ في أبعاد تانية. أفضل: consistency (ما يتأثرش بـ fatigue)، speed، cost at scale. أسوأ: novel situations، complex reasoning evaluation، cultural nuance. الأهم: الـ RM بيـ "compress" human judgment في parameters محدودة. Information loss حقيقي. التساؤل الأعمق: هل يجوز نبني alignment system بتعتمد كلياً على compressed version من human judgment؟
+
+---
+
+## ٧. "هيقولك X" — ردودك الأعمق
+
+**هيقولك: "الـ RM بيعلم النموذج يكون helpful وharmless وhonest."**
+
+الرد: الـ RM بيعلم النموذج يعمل responses اللي annotators فضلوها في training. الـ HHH (Helpful, Harmless, Honest) هو framework conceptual اتحول لـ annotation guidelines. لكن الـ gap بين "annotation guidelines" والـ "actual values" ضخم. لو annotators systemically بيفضلوا confident responses — حتى لما الـ confidence غلط — الـ RM هيمدح overconfidence.
+
+**هيقولك: "الـ Constitutional AI من Anthropic حلت مشكلة الـ RM."**
+
+الرد: Constitutional AI حسّنت الـ RM generation بشكل ذكي: بدل annotators بشريين فقط، استخدمت Claude نفسه لتوليد preferences based on a constitution. ده قلل الـ annotation cost وحسّن consistency. لكن الـ constitution نفسها مكتوبة بإنسان (Anthropic team). الـ RM لسه بيتعلم "ما يتوافق مع الـ constitution" — والـ question لسه مفتوح: هل الـ constitution حقاً تعكس ما يريده البشر؟
+
+---
+
+## ٨. الـ Open Problems
+
+**المشكلة الأولى: Scalable Oversight**
+
+لما النموذج يكون أذكى من الإنسان في domain معين، الإنسان مش قادر يقيّم جودة الـ response. الـ RM بيتدرب على human comparisons — لو الـ human ما يقدرش يميز بين response صح وغلط، الـ RM هيتعلم noise. ده الـ fundamental alignment problem وما فيش حل كامل ليه لحد الآن.
+
+**المشكلة التانية: Multi-Dimensional Reward**
+
+الـ RM الحالي بيـ output scalar واحد. بس الـ preferences متعددة الأبعاد: helpfulness، safety، honesty، conciseness. بعض الأبعاد دي بتتعارض. Pareto-optimal response مش موجودة — عندك tradeoff. الـ single scalar بيخسر هذا الـ tradeoff information.
+
+**المشكلة التالتة: RM Self-Improvement**
+
+مع تحسن النماذج، الـ RM المدرب على responses من نموذج قديم بيبقى out of date. الـ question: إزاي نعمل RM يتحدث مع تحسن النماذج من غير نشغّل annotation campaigns كاملة من الصفر؟
+
+---
+
+## مفاهيم متعلقة
+
+- **SFT** — الخطوة قبل الـ RM في الـ pipeline
+- **RLHF** — الـ RM هو جزء أساسي في الـ full RLHF pipeline
+- **PPO** — الـ optimizer اللي بيستخدم الـ RM signal لتحسين الـ policy
+- **DPO** — بديل يتجنب الـ explicit RM
+- **Constitutional AI** — Anthropic's approach لتحسين الـ RM training
