@@ -14,6 +14,7 @@ sections:
   - التناقضات الداخلية
   - اللي ما بيتقالش
   - أسئلة المناظرة
+  - هيقولك X — ردودك الأعمق
   - الـ Open Problems
   - مفاهيم متعلقة
 ---
@@ -77,6 +78,8 @@ You are a helpful assistant.
 <|eot_id|>
 ```
 
+الـ template ده بيبقى جزء من الـ training — النموذج بيتعلم "لما أشوف `<|start_header_id|>assistant<|end_header_id|>`، الكلام اللي بعده المفروض يكون ردي."
+
 **Learning Rate وScheduling:**
 
 الـ SFT بياخد learning rate أصغر بكتير من الـ pre-training:
@@ -136,7 +139,7 @@ You are a helpful assistant.
 
 الـ SFT بتفترض إن عندك "expert" بيكتب الـ ideal responses. بس في الواقع:
 - في OpenAI الـ contractors كانوا Kenyan workers بـ $3/hour
-- الـ agreement بين annotators على "ideal response" غالباً أقل من 70%
+- الـ agreement بين annotators على "ideal response" غالباً <70%
 - الـ annotators بيتأثروا بـ word count، formatting، confidence tone — مش accuracy
 
 ده معناه إن الـ SFT بتعكس **human annotation artifacts** مش human values. النموذج بيتعلم يكتب "responses that look good to the average Mechanical Turk worker."
@@ -145,15 +148,19 @@ You are a helpful assistant.
 
 في الـ inference، النموذج بيولد token بعد token بناءً على توكنات ولدها هو. بس في الـ training، الـ input في كل step هو الـ ground truth response مش الـ model's own output.
 
-ده الـ "teacher forcing" problem. النموذج ما شافش حالة "ولدت token غلط وبعدين محتاج أكمل." في الـ inference، لو ولد token غلط، الباقي كله بيـ "drift."
+ده الـ "teacher forcing" problem. النموذج ما شافش حالة "ولدت token غلط وبعدين محتاج أكمل." في الـ inference، لو ولد token غلط، الباقي كله بيـ "drift." ده بيفسر ليه بعض النماذج بتـ "fall apart" في long generation من بعد مقطع معين.
 
 **المشكلة التالتة: الـ Format Bias**
 
-النماذج بعد SFT بتميل لـ responses بنفس الـ structure: intro → bullet points → conclusion. ده لأن الـ training data كانت كده. لو المستخدم طلب شيء مختلف، النموذج ممكن يقاوم لأن الـ SFT hardwired فيه الـ "preferred format."
+النماذج بعد SFT بتميل لـ responses بنفس الـ structure: intro → bullet points → conclusion. ده لأن الـ training data كانت كده.
+
+لو المستخدم طلب شيء مختلف (answer in one sentence، answer as a poem، answer as a list of counterarguments)، النموذج ممكن يقاوم لأن الـ SFT hardwired فيه الـ "preferred format."
 
 **المشكلة الرابعة: Data Leakage وBenchmark Overfitting**
 
-بعض الـ SFT datasets اتبنت من web data اللي فيها benchmarks متضمنة. نموذج اتدرب على Wikipedia ممكن يشوف MMLU questions وأجوبتها في الـ pre-training. الـ SFT بعدين بتـ "activate" الـ route للإجابة الصح بشكل أسرع — مش لأن النموذج اتحسن، لكن لأن الإجابة موجودة في memory.
+بعض الـ SFT datasets اتبنت من web data اللي فيها benchmarks متضمنة. نموذج اتدرب على Wikipedia ممكن يشوف MMLU questions وأجوبتها في الـ pre-training. الـ SFT بعدين بتـ "activate" الـ route للإجابة الصح بشكل أسرع — مش لأن النموذج اتحسن، لكن لأن الإجابة موجودة في memory من الـ pre-training data.
+
+ده بيخلي benchmark comparison بين نماذج مختلفة صعبة جداً — ما تعرفش هل الفرق في capability أو في data contamination.
 
 ---
 
@@ -205,8 +212,7 @@ You are a helpful assistant.
 
 ## مفاهيم متعلقة
 
-- **Reward Model (RM)** — الخطوة التالية: بعد الـ SFT، بنبني Reward Model يقيّم الـ responses
-- **RLHF** — Full Pipeline: SFT هو أول خطوة في الـ RLHF pipeline
+- **Reward Model** — الخطوة التالية: بعد الـ SFT، بنبني Reward Model يقيّم الـ responses
+- **RLHF** — SFT هو أول خطوة في الـ RLHF pipeline
 - **DPO** — بديل للـ RLHF يبني مباشرة على الـ SFT model
-- **LoRA** — الطريقة الأكتر استخداماً لعمل SFT من غير fine-tuning full model
 - **Sycophancy** — المشكلة الرئيسية اللي بتنشأ من الـ SFT data bias
