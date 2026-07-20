@@ -83,7 +83,7 @@ export default async function ChapterPage({ params }: PageProps) {
         components={MDX_COMPONENTS}
         options={{
           mdxOptions: {
-            format: params.slug === 'ai-concepts' ? 'md' : 'mdx',
+            format: ['ai-concepts', 'physics-concepts'].includes(params.slug) ? 'md' : 'mdx',
             remarkPlugins: [remarkMath],
             rehypePlugins: [rehypeKatex],
           },
