@@ -83,7 +83,7 @@ export default async function ChapterPage({ params }: PageProps) {
         components={MDX_COMPONENTS}
         options={{
           mdxOptions: {
-            format: ['ai-concepts', 'physics-concepts', 'arabic-concepts', 'arabic-spiral', 'euphemisms-kilito', 'brain-kilito', 'mockingbird-kilito', 'kilito-ai', 'maqalat', 'balagha-wadiha'].includes(params.slug) ? 'md' : 'mdx',
+            format: ['ai-concepts', 'physics-concepts', 'arabic-concepts', 'arabic-spiral', 'euphemisms-kilito', 'brain-kilito', 'mockingbird-kilito', 'kilito-ai', 'maqalat', 'balagha-wadiha', 'production-ai'].includes(params.slug) ? 'md' : 'mdx',
             remarkPlugins: [remarkMath],
             rehypePlugins: [rehypeKatex],
           },
