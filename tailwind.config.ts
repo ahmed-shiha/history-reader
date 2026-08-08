@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './app/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -8,18 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'ink':            '#1A1008',
-        'ink-mid':        '#4A3420',
-        'ink-lt':         '#7A6A58',
-        'paper':          '#F8F4EE',
-        'surface':        '#EDE9DE',
-        'rule':           '#D8CEBC',
-        'greek':          '#7A4B1C',
-        'greek-light':    '#FBF3E5',
-        'modern':         '#26527A',
-        'modern-light':   '#EEF3FA',
-        'highlight':      '#FEF08A',
-        'highlight-active': '#FDE047',
+        // All tokens reference CSS vars (RGB triplets) so opacity modifiers work:
+        // bg-ink/50  →  rgb(var(--ink) / 0.5)  ✓
+        'ink':              'rgb(var(--ink) / <alpha-value>)',
+        'ink-mid':          'rgb(var(--ink-mid) / <alpha-value>)',
+        'ink-lt':           'rgb(var(--ink-lt) / <alpha-value>)',
+        'paper':            'rgb(var(--paper) / <alpha-value>)',
+        'surface':          'rgb(var(--surface) / <alpha-value>)',
+        'rule':             'rgb(var(--rule) / <alpha-value>)',
+        'greek':            'rgb(var(--greek) / <alpha-value>)',
+        'greek-light':      'rgb(var(--greek-light) / <alpha-value>)',
+        'modern':           'rgb(var(--modern) / <alpha-value>)',
+        'modern-light':     'rgb(var(--modern-light) / <alpha-value>)',
+        'highlight':        'rgb(var(--highlight) / <alpha-value>)',
+        'highlight-active': 'rgb(var(--highlight-active) / <alpha-value>)',
       },
       fontFamily: {
         tajawal: ['var(--font-tajawal)', 'Tajawal', 'Traditional Arabic', 'sans-serif'],

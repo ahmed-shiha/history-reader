@@ -193,7 +193,7 @@ export default function SelectionPopup({
       // Prevent the popup itself from collapsing the selection
       onPointerDown={(e) => e.preventDefault()}
     >
-      <div className="flex items-center gap-1.5 bg-white shadow-xl rounded-lg px-3 py-2 border border-rule">
+      <div className="flex items-center gap-1.5 bg-paper shadow-xl rounded-lg px-3 py-2 border border-rule">
         <button
           onClick={handleButtonClick}
           className="flex items-center gap-1.5 text-sm font-medium text-greek hover:text-greek/80 whitespace-nowrap transition-colors"
@@ -205,28 +205,10 @@ export default function SelectionPopup({
       {/* Caret pointer — points toward the selection */}
       {popup.isBelow ? (
         // Popup is below selection: caret at top pointing up
-        <div
-          className="absolute left-1/2 -translate-x-1/2 bottom-full"
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: '6px solid transparent',
-            borderRight: '6px solid transparent',
-            borderBottom: '6px solid #D8CEBC',
-          }}
-        />
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-full popup-caret-up" />
       ) : (
         // Popup is above selection: caret at bottom pointing down
-        <div
-          className="absolute left-1/2 -translate-x-1/2 top-full"
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: '6px solid transparent',
-            borderRight: '6px solid transparent',
-            borderTop: '6px solid #D8CEBC',
-          }}
-        />
+        <div className="absolute left-1/2 -translate-x-1/2 top-full popup-caret-down" />
       )}
     </div>
   )

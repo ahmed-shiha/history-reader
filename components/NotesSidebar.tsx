@@ -72,7 +72,7 @@ function NoteCard({
       {/* Selected text quote */}
       <blockquote
         dir="rtl"
-        className="border-r-2 border-yellow-400 bg-yellow-50 pr-2.5 py-1 text-xs text-ink-mid leading-relaxed line-clamp-2 mb-2"
+        className="border-r-2 border-yellow-400 dark:border-amber-600 bg-yellow-50 dark:bg-amber-950/40 pr-2.5 py-1 text-xs text-ink-mid leading-relaxed line-clamp-2 mb-2"
       >
         {note.selected_text}
       </blockquote>
@@ -100,7 +100,7 @@ function NoteCard({
             onClick={handleDelete}
             className={`p-1 rounded transition-colors ${
               confirmDelete
-                ? 'text-red-600 bg-red-50'
+                ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40'
                 : 'text-ink-lt hover:text-red-500'
             }`}
             aria-label="حذف الملاحظة"
@@ -196,7 +196,7 @@ export default function NotesSidebar({
           📋
         </span>
         {notes.length > 0 && (
-          <span className="absolute -top-1 -right-1 bg-yellow-400 text-ink text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-yellow-400 dark:bg-amber-500 text-ink text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
             {notes.length > 9 ? '9+' : notes.length}
           </span>
         )}

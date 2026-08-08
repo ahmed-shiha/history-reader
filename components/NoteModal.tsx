@@ -110,7 +110,7 @@ export default function NoteModal({
             <p className="text-xs text-ink-lt mb-1.5">النص المحدَّد</p>
             <blockquote
               dir="rtl"
-              className="border-r-4 border-yellow-400 bg-yellow-50 px-4 py-3 rounded-l-md text-sm text-ink-mid leading-relaxed line-clamp-4"
+              className="border-r-4 border-yellow-400 dark:border-amber-600 bg-yellow-50 dark:bg-amber-950/40 px-4 py-3 rounded-l-md text-sm text-ink-mid leading-relaxed line-clamp-4"
             >
               {selectedText}
             </blockquote>

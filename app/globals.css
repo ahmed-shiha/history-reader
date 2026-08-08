@@ -2,33 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Color tokens (RGB triplets for opacity-modifier support) ─── */
 :root {
-  --ink: #1A1008;
-  --paper: #F8F4EE;
-  --rule: #D8CEBC;
-  --greek: #7A4B1C;
-  --modern: #26527A;
+  --ink:              26 16 8;
+  --ink-mid:          74 52 32;
+  --ink-lt:           122 106 88;
+  --paper:            248 244 238;
+  --surface:          237 233 222;
+  --rule:             216 206 188;
+  --greek:            122 75 28;
+  --greek-light:      251 243 229;
+  --modern:           38 82 122;
+  --modern-light:     238 243 250;
+  --highlight:        254 240 138;
+  --highlight-active: 253 224 71;
 }
 
+.dark {
+  --ink:              237 224 204;
+  --ink-mid:          184 168 152;
+  --ink-lt:           138 122 106;
+  --paper:            24 20 16;
+  --surface:          34 28 22;
+  --rule:             58 46 36;
+  --greek:            196 135 74;
+  --greek-light:      44 30 10;
+  --modern:           110 168 212;
+  --modern-light:     14 32 52;
+  --highlight:        100 78 10;
+  --highlight-active: 140 108 14;
+}
+
+/* ─── Base ─── */
 html {
   direction: rtl;
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
+  background: rgb(var(--paper));
+  color: rgb(var(--ink));
   font-family: var(--font-tajawal), 'Tajawal', 'Traditional Arabic', sans-serif;
   font-size: 20px;
   line-height: 2;
 }
 
-/* Article prose styles */
+/* ─── Article prose ─── */
 .article-prose h2 {
   @apply text-xl font-bold mt-16 mb-4 pb-3 border-b border-rule text-ink;
+  font-weight: 800;
 }
 .article-prose h3 {
-  @apply text-lg font-bold mt-10 mb-3 text-greek;
+  @apply text-base font-bold mt-10 mb-3;
+  color: rgb(var(--greek));
 }
 .article-prose p {
   @apply my-5 leading-loose text-justify;
@@ -63,41 +89,51 @@ body {
 .article-prose table {
   @apply text-sm;
 }
-.article-prose h2 {
-  @apply text-xl font-bold mt-16 mb-4 pb-3 border-b border-rule text-ink;
-  font-weight: 800;
-}
-.article-prose h3 {
-  @apply text-base font-bold mt-10 mb-3;
-  color: var(--greek);
-}
-/* drop-cap on first paragraph after each h2 */
+
+/* Drop-cap on first paragraph after each h2 */
 .article-prose h2 + p::first-letter {
   float: right;
   font-size: 3em;
   line-height: 0.85;
   margin-left: 0.1em;
   margin-top: 0.08em;
-  color: var(--greek);
+  color: rgb(var(--greek));
   font-weight: 800;
 }
+
 .font-math {
   font-family: Georgia, 'Times New Roman', serif;
 }
 
-/* Text highlight marks */
+/* ─── Text highlight marks ─── */
 mark[data-note-id] {
-  background: #FEF08A;
+  background: rgb(var(--highlight));
   border-radius: 2px;
   cursor: pointer;
   padding: 1px 0;
   transition: background 0.15s;
 }
 mark[data-note-id]:hover {
-  background: #FDE047;
+  background: rgb(var(--highlight-active));
 }
 mark[data-note-id].active {
-  background: #FDE047;
-  outline: 2px solid #CA8A04;
+  background: rgb(var(--highlight-active));
+  outline: 2px solid rgb(var(--greek));
   outline-offset: 1px;
+}
+
+/* ─── Selection popup caret triangles (themed) ─── */
+.popup-caret-up {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid rgb(var(--rule));
+}
+.popup-caret-down {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgb(var(--rule));
 }

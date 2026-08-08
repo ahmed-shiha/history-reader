@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Tajawal } from 'next/font/google'
 import './globals.css'
 import 'katex/dist/katex.min.css'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const tajawal = Tajawal({
   subsets: ['arabic', 'latin'],
@@ -22,7 +23,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ar" dir="rtl" className={tajawal.variable}>
+    <html lang="ar" dir="rtl" className={tajawal.variable} suppressHydrationWarning>
+      <head>
+        {/* FOUC prevention: apply saved theme before first paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-paper text-ink font-tajawal">
         <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur border-b border-rule">
           <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
@@ -45,6 +54,7 @@ export default function RootLayout({
               >
                 الملاحظات
               </Link>
+              <ThemeToggle />
             </div>
           </div>
         </nav>
