@@ -72,7 +72,7 @@ export function useReadingProgress({
   useEffect(() => {
     const el = articleRef.current
     if (el) {
-      const text = el.innerText || el.textContent || ''
+      const text = el.textContent || ''
       totalWords.current = text.trim().split(/\s+/).filter(Boolean).length
     }
 
