@@ -3,6 +3,7 @@ import { useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
 import type { ChapterMeta, Note, CreateNoteInput } from '@/lib/types'
 import { useNotes } from '@/hooks/useNotes'
+import { useReadingProgress } from '@/hooks/useReadingProgress'
 import SelectionPopup from '@/components/SelectionPopup'
 import NoteModal from '@/components/NoteModal'
 import ArticleHighlighter from '@/components/ArticleHighlighter'
@@ -42,6 +43,14 @@ export default function ChapterClient({
   const noteKey = chapterNoteKey(bookSlug, chapterSlug)
   const { notes, addNote, deleteNote, updateNote } = useNotes(noteKey)
   const contentRef = useRef<HTMLDivElement>(null)
+
+  useReadingProgress({
+    bookSlug,
+    chapterSlug,
+    bookTitle: meta.book_title,
+    chapterTitle: meta.title,
+    articleRef: contentRef,
+  })
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null)
   const [modalState, setModalState] = useState<ModalState>({
     isOpen: false,

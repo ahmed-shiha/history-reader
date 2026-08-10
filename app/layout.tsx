@@ -54,6 +54,12 @@ export default function RootLayout({
               >
                 الملاحظات
               </Link>
+              <Link
+                href="/stats"
+                className="text-sm text-ink-mid hover:text-greek transition-colors px-3 py-1.5 rounded-md hover:bg-greek-light"
+              >
+                التقدُّم
+              </Link>
               <ThemeToggle />
             </div>
           </div>
