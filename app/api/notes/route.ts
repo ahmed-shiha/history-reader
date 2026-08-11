@@ -13,10 +13,16 @@ export async function GET(request: NextRequest) {
     const articleSlug = searchParams.get('article_slug')
     const sort = searchParams.get('sort') === 'asc' ? 'asc' : 'desc'
 
-    const { data, error } = await getSupabase().rpc('get_notes', {
-      p_article_slug: articleSlug ?? null,
-      p_sort: sort,
-    })
+    let query = getSupabase()
+      .from('notes')
+      .select('*')
+      .order('created_at', { ascending: sort === 'asc' })
+
+    if (articleSlug) {
+      query = query.eq('article_slug', articleSlug)
+    }
+
+    const { data, error } = await query
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ notes: data as Note[] })
@@ -38,15 +44,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { data, error } = await getSupabase().rpc('insert_note', {
-      p_article_slug:   body.article_slug,
-      p_selected_text:  body.selected_text,
-      p_note_content:   body.note_content  ?? '',
-      p_section_heading: body.section_heading ?? null,
-      p_char_start:     body.char_start ?? null,
-      p_char_end:       body.char_end   ?? null,
-      p_color:          body.color      ?? 'amber',
-    })
+    const { data, error } = await getSupabase()
+      .from('notes')
+      .insert({
+        article_slug:    body.article_slug,
+        selected_text:   body.selected_text,
+        note_content:    body.note_content    ?? '',
+        section_heading: body.section_heading ?? null,
+        char_start:      body.char_start      ?? null,
+        char_end:        body.char_end        ?? null,
+        color:           body.color           ?? 'amber',
+      })
+      .select()
+      .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ note: data as Note }, { status: 201 })
