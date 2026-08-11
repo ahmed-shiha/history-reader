@@ -4,43 +4,27 @@ import { getSupabase } from '@/lib/supabase'
 export const dynamic = 'force-dynamic'
 
 // GET /api/reading-progress?days=30
-// GET /api/reading-progress?book_slug=X&chapter_slug=Y&latest=true  → single most-recent record
+// GET /api/reading-progress?book_slug=X&chapter_slug=Y&latest=true
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl
     const bookSlug    = searchParams.get('book_slug')
     const chapterSlug = searchParams.get('chapter_slug')
     const latest      = searchParams.get('latest') === 'true'
+    const days        = parseInt(searchParams.get('days') ?? '60', 10)
 
-    // ── Latest record for a specific chapter ──────────────────────
-    if (latest && bookSlug && chapterSlug) {
-      const { data, error } = await getSupabase()
-        .from('reading_progress')
-        .select('*')
-        .eq('book_slug', bookSlug)
-        .eq('chapter_slug', chapterSlug)
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-
-      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-      return NextResponse.json({ record: data })
-    }
-
-    // ── Last N days (stats page) ──────────────────────────────────
-    const days = parseInt(searchParams.get('days') ?? '60', 10)
-    const since = new Date()
-    since.setDate(since.getDate() - days)
-    const sinceStr = since.toISOString().slice(0, 10)
-
-    const { data, error } = await getSupabase()
-      .from('reading_progress')
-      .select('*')
-      .gte('date', sinceStr)
-      .order('date', { ascending: false })
-      .order('updated_at', { ascending: false })
+    const { data, error } = await getSupabase().rpc('get_reading_progress', {
+      p_days:         days,
+      p_book_slug:    bookSlug ?? null,
+      p_chapter_slug: chapterSlug ?? null,
+      p_latest:       latest,
+    })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    if (latest) {
+      return NextResponse.json({ record: data?.[0] ?? null })
+    }
     return NextResponse.json({ records: data })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unexpected error'
@@ -49,7 +33,6 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/reading-progress
-// Body: { date, book_slug, chapter_slug, book_title, chapter_title, words_read, scroll_pct, char_offset?, total_chars? }
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -59,24 +42,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const payload = {
-      date,
-      book_slug,
-      chapter_slug,
-      book_title:    book_title    ?? '',
-      chapter_title: chapter_title ?? '',
-      words_read:    Math.max(0, Math.round(words_read ?? 0)),
-      scroll_pct:    Math.min(1, Math.max(0, scroll_pct ?? 0)),
-      char_offset:   Math.max(0, Math.round(char_offset ?? 0)),
-      total_chars:   Math.max(0, Math.round(total_chars ?? 0)),
-      updated_at:    new Date().toISOString(),
-    }
-
-    const { data, error } = await getSupabase()
-      .from('reading_progress')
-      .upsert(payload, { onConflict: 'date,book_slug,chapter_slug' })
-      .select()
-      .single()
+    const { data, error } = await getSupabase().rpc('upsert_reading_progress', {
+      p_date:          date,
+      p_book_slug:     book_slug,
+      p_chapter_slug:  chapter_slug,
+      p_book_title:    book_title    ?? '',
+      p_chapter_title: chapter_title ?? '',
+      p_words_read:    Math.max(0, Math.round(words_read  ?? 0)),
+      p_scroll_pct:    Math.min(1, Math.max(0, scroll_pct ?? 0)),
+      p_char_offset:   Math.max(0, Math.round(char_offset ?? 0)),
+      p_total_chars:   Math.max(0, Math.round(total_chars ?? 0)),
+    })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ record: data }, { status: 200 })

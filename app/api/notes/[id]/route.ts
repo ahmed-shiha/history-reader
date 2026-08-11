@@ -13,16 +13,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = params
-
-    const { error } = await getSupabase()
-      .from('notes')
-      .delete()
-      .eq('id', id)
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-
+    const { error } = await getSupabase().rpc('delete_note', { p_id: id })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ success: true })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unexpected error'
@@ -40,31 +32,12 @@ export async function PATCH(
     const { id } = params
     const body: { note_content?: string } = await request.json()
 
-    if (!body.note_content) {
-      return NextResponse.json(
-        { error: 'Missing required field: note_content' },
-        { status: 400 }
-      )
-    }
+    const { data, error } = await getSupabase().rpc('update_note', {
+      p_id: id,
+      p_note_content: body.note_content ?? '',
+    })
 
-    const { data, error } = await getSupabase()
-      .from('notes')
-      .update({
-        note_content: body.note_content,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-
-    if (!data) {
-      return NextResponse.json({ error: 'Note not found' }, { status: 404 })
-    }
-
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ note: data as Note })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unexpected error'
