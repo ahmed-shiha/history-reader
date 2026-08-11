@@ -1,6 +1,6 @@
 'use client'
 import { useRef, useState, useCallback } from 'react'
-import type { ArticleMeta, Note, CreateNoteInput } from '@/lib/types'
+import type { ArticleMeta, Note, CreateNoteInput, NoteColor } from '@/lib/types'
 import { useNotes } from '@/hooks/useNotes'
 import SelectionPopup from '@/components/SelectionPopup'
 import NoteModal from '@/components/NoteModal'
@@ -46,6 +46,24 @@ export default function ArticleClient({
     pending: null,
     editingNote: null,
   })
+
+  // ── Save instant color highlight (no modal) ───────────────────────────────
+  const handleHighlight = useCallback(
+    async (selectedText: string, sectionHeading: string | null, charStart: number, charEnd: number, color: NoteColor) => {
+      const input: CreateNoteInput = {
+        article_slug: slug,
+        selected_text: selectedText,
+        note_content: '',
+        section_heading: sectionHeading ?? undefined,
+        char_start: charStart,
+        char_end: charEnd,
+        color,
+      }
+      const saved = await addNote(input)
+      if (saved) setActiveNoteId(saved.id)
+    },
+    [slug, addNote],
+  )
 
   // ── Open modal to create a new note ──────────────────────────────────────
   const handleAddNote = useCallback(
@@ -195,6 +213,7 @@ export default function ArticleClient({
           {/* Selection popup — fixed-position, floats above selected text */}
           <SelectionPopup
             onAddNote={handleAddNote}
+            onHighlight={handleHighlight}
             articleRef={articleRef}
           />
 
