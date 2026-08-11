@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback, useRef } from 'react'
+import type { NoteColor } from '@/lib/types'
 
 interface PopupState {
   visible: boolean
@@ -13,12 +14,8 @@ interface PopupState {
 }
 
 interface SelectionPopupProps {
-  onAddNote: (
-    selectedText: string,
-    sectionHeading: string | null,
-    charStart: number,
-    charEnd: number,
-  ) => void
+  onAddNote: (selectedText: string, sectionHeading: string | null, charStart: number, charEnd: number) => void
+  onHighlight: (selectedText: string, sectionHeading: string | null, charStart: number, charEnd: number, color: NoteColor) => void
   articleRef: React.RefObject<HTMLDivElement>
 }
 
@@ -59,6 +56,7 @@ const POPUP_INITIAL: PopupState = {
 
 export default function SelectionPopup({
   onAddNote,
+  onHighlight,
   articleRef,
 }: SelectionPopupProps) {
   const [popup, setPopup] = useState<PopupState>(POPUP_INITIAL)
@@ -165,15 +163,18 @@ export default function SelectionPopup({
     }
   }, [handlePointerDown, handlePointerUp, handleSelectionChange])
 
-  const handleButtonClick = (e: React.MouseEvent) => {
+  const handleHighlightClick = (e: React.MouseEvent, color: NoteColor) => {
     e.preventDefault()
     e.stopPropagation()
-    onAddNote(
-      popup.selectedText,
-      popup.sectionHeading,
-      popup.charStart,
-      popup.charEnd,
-    )
+    onHighlight(popup.selectedText, popup.sectionHeading, popup.charStart, popup.charEnd, color)
+    hidePopup()
+    window.getSelection()?.removeAllRanges()
+  }
+
+  const handleNoteClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onAddNote(popup.selectedText, popup.sectionHeading, popup.charStart, popup.charEnd)
     hidePopup()
     window.getSelection()?.removeAllRanges()
   }
@@ -190,24 +191,50 @@ export default function SelectionPopup({
         zIndex: 40,
         pointerEvents: 'auto',
       }}
-      // Prevent the popup itself from collapsing the selection
       onPointerDown={(e) => e.preventDefault()}
     >
-      <div className="flex items-center gap-1.5 bg-paper shadow-xl rounded-lg px-3 py-2 border border-rule">
+      <div className="flex items-center gap-1 bg-paper shadow-xl rounded-lg px-2 py-1.5 border border-rule">
+        {/* Amber highlight */}
         <button
-          onClick={handleButtonClick}
-          className="flex items-center gap-1.5 text-sm font-medium text-greek hover:text-greek/80 whitespace-nowrap transition-colors"
+          onClick={(e) => handleHighlightClick(e, 'amber')}
+          title="تظليل أصفر"
+          className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-surface transition-colors"
+          aria-label="تظليل أصفر"
         >
-          <span aria-hidden="true">📝</span>
-          <span>إضافة ملاحظة</span>
+          <span
+            className="w-4 h-4 rounded-sm border border-rule/60"
+            style={{ background: 'rgb(254 240 138)' }}
+          />
+        </button>
+        {/* Teal highlight */}
+        <button
+          onClick={(e) => handleHighlightClick(e, 'teal')}
+          title="تظليل أخضر"
+          className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-surface transition-colors"
+          aria-label="تظليل أخضر"
+        >
+          <span
+            className="w-4 h-4 rounded-sm border border-rule/60"
+            style={{ background: 'rgb(167 243 208)' }}
+          />
+        </button>
+        {/* Divider */}
+        <div className="w-px h-5 bg-rule mx-0.5" />
+        {/* Add note */}
+        <button
+          onClick={handleNoteClick}
+          title="إضافة ملاحظة"
+          className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-surface transition-colors text-greek"
+          aria-label="إضافة ملاحظة"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+          </svg>
         </button>
       </div>
-      {/* Caret pointer — points toward the selection */}
       {popup.isBelow ? (
-        // Popup is below selection: caret at top pointing up
         <div className="absolute left-1/2 -translate-x-1/2 bottom-full popup-caret-up" />
       ) : (
-        // Popup is above selection: caret at bottom pointing down
         <div className="absolute left-1/2 -translate-x-1/2 top-full popup-caret-down" />
       )}
     </div>

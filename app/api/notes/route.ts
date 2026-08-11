@@ -45,11 +45,9 @@ export async function POST(request: NextRequest) {
     const body: CreateNoteInput = await request.json()
 
     // Validate required fields
-    if (!body.article_slug || !body.selected_text || !body.note_content) {
+    if (!body.article_slug || !body.selected_text) {
       return NextResponse.json(
-        {
-          error: 'Missing required fields: article_slug, selected_text, note_content',
-        },
+        { error: 'Missing required fields: article_slug, selected_text' },
         { status: 400 }
       )
     }
@@ -58,9 +56,10 @@ export async function POST(request: NextRequest) {
       article_slug: body.article_slug,
       section_heading: body.section_heading ?? null,
       selected_text: body.selected_text,
-      note_content: body.note_content,
+      note_content: body.note_content ?? '',
       char_start: body.char_start ?? null,
       char_end: body.char_end ?? null,
+      color: body.color ?? 'amber',
     }
 
     const { data, error } = await getSupabase()

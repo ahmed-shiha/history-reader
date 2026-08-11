@@ -1,9 +1,9 @@
 'use client'
 import { useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
-import type { ChapterMeta, Note, CreateNoteInput } from '@/lib/types'
+import type { ChapterMeta, Note, CreateNoteInput, NoteColor } from '@/lib/types'
 import { useNotes } from '@/hooks/useNotes'
-import { useReadingProgress } from '@/hooks/useReadingProgress'
+import { useReadMark } from '@/hooks/useReadMark'
 import SelectionPopup from '@/components/SelectionPopup'
 import NoteModal from '@/components/NoteModal'
 import ArticleHighlighter from '@/components/ArticleHighlighter'
@@ -44,7 +44,7 @@ export default function ChapterClient({
   const { notes, addNote, deleteNote, updateNote } = useNotes(noteKey)
   const contentRef = useRef<HTMLDivElement>(null)
 
-  useReadingProgress({
+  const { markerPct, markerWords } = useReadMark({
     bookSlug,
     chapterSlug,
     bookTitle: meta.book_title,
@@ -59,12 +59,7 @@ export default function ChapterClient({
   })
 
   const handleAddNote = useCallback(
-    (
-      selectedText: string,
-      sectionHeading: string | null,
-      charStart: number,
-      charEnd: number,
-    ) => {
+    (selectedText: string, sectionHeading: string | null, charStart: number, charEnd: number) => {
       setModalState({
         isOpen: true,
         pending: { selectedText, sectionHeading, charStart, charEnd },
@@ -72,6 +67,23 @@ export default function ChapterClient({
       })
     },
     [],
+  )
+
+  const handleHighlight = useCallback(
+    async (selectedText: string, sectionHeading: string | null, charStart: number, charEnd: number, color: NoteColor) => {
+      const input: CreateNoteInput = {
+        article_slug: noteKey,
+        selected_text: selectedText,
+        note_content: '',
+        section_heading: sectionHeading ?? undefined,
+        char_start: charStart,
+        char_end: charEnd,
+        color,
+      }
+      const saved = await addNote(input)
+      if (saved) setActiveNoteId(saved.id)
+    },
+    [noteKey, addNote],
   )
 
   const handleSaveNewNote = useCallback(
@@ -194,11 +206,23 @@ export default function ChapterClient({
           </header>
 
           {/* Chapter body */}
-          <div ref={contentRef} className="article-prose" dir="rtl">
-            {children}
+          <div className="relative">
+            <div ref={contentRef} className="article-prose" dir="rtl">
+              {children}
+            </div>
+            {/* Read mark — click anywhere in the text to set */}
+            {markerPct !== null && (
+              <div
+                className="read-mark-line"
+                style={{ top: `${markerPct * 100}%` }}
+                title={`قرأت حتى هنا — ${markerWords.toLocaleString('ar-EG')} كلمة`}
+              >
+                <span className="text-xs text-greek/60 shrink-0 select-none leading-none">🔖</span>
+              </div>
+            )}
           </div>
 
-          <SelectionPopup onAddNote={handleAddNote} articleRef={contentRef} />
+          <SelectionPopup onAddNote={handleAddNote} onHighlight={handleHighlight} articleRef={contentRef} />
           <ArticleHighlighter
             notes={notes}
             articleRef={contentRef}

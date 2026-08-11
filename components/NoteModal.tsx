@@ -54,9 +54,7 @@ export default function NoteModal({
   }, [isOpen, handleKeyDown])
 
   const handleSave = () => {
-    const trimmed = content.trim()
-    if (!trimmed) return
-    onSave(trimmed)
+    onSave(content.trim())
   }
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -122,7 +120,7 @@ export default function NoteModal({
               htmlFor="note-content"
               className="text-xs text-ink-lt mb-1.5 block"
             >
-              ملاحظتك
+              ملاحظتك <span className="opacity-60">(اختياري — اتركه فارغاً للتظليل فقط)</span>
             </label>
             <textarea
               id="note-content"
@@ -150,10 +148,9 @@ export default function NoteModal({
         <div className="flex items-center gap-3 px-5 py-4 border-t border-rule">
           <button
             onClick={handleSave}
-            disabled={!content.trim()}
-            className="flex-1 bg-greek text-paper font-bold text-sm py-2.5 px-4 rounded-lg hover:bg-greek/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 bg-greek text-paper font-bold text-sm py-2.5 px-4 rounded-lg hover:bg-greek/90 transition-colors"
           >
-            {isEditing ? 'حفظ التعديل' : 'حفظ الملاحظة'}
+            {isEditing ? 'حفظ التعديل' : content.trim() ? 'حفظ الملاحظة' : 'حفظ كتظليل'}
           </button>
           <button
             onClick={onClose}

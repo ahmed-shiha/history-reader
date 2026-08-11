@@ -33,6 +33,7 @@ export default function ArticleHighlighter({
         accuracy: 'partially',
         each: (markEl: HTMLElement) => {
           markEl.setAttribute('data-note-id', note.id)
+          markEl.setAttribute('data-color', note.color ?? 'amber')
           markEl.setAttribute('title', note.note_content)
           if (note.id === activeNoteId) {
             markEl.classList.add('active')

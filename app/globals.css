@@ -4,33 +4,37 @@
 
 /* ─── Color tokens (RGB triplets for opacity-modifier support) ─── */
 :root {
-  --ink:              26 16 8;
-  --ink-mid:          74 52 32;
-  --ink-lt:           122 106 88;
-  --paper:            248 244 238;
-  --surface:          237 233 222;
-  --rule:             216 206 188;
-  --greek:            122 75 28;
-  --greek-light:      251 243 229;
-  --modern:           38 82 122;
-  --modern-light:     238 243 250;
-  --highlight:        254 240 138;
-  --highlight-active: 253 224 71;
+  --ink:                    26 16 8;
+  --ink-mid:                74 52 32;
+  --ink-lt:                 122 106 88;
+  --paper:                  248 244 238;
+  --surface:                237 233 222;
+  --rule:                   216 206 188;
+  --greek:                  122 75 28;
+  --greek-light:            251 243 229;
+  --modern:                 38 82 122;
+  --modern-light:           238 243 250;
+  --highlight:              254 240 138;
+  --highlight-active:       253 224 71;
+  --highlight-teal:         167 243 208;
+  --highlight-teal-active:  110 231 183;
 }
 
 .dark {
-  --ink:              237 224 204;
-  --ink-mid:          184 168 152;
-  --ink-lt:           138 122 106;
-  --paper:            24 20 16;
-  --surface:          34 28 22;
-  --rule:             58 46 36;
-  --greek:            196 135 74;
-  --greek-light:      44 30 10;
-  --modern:           110 168 212;
-  --modern-light:     14 32 52;
-  --highlight:        100 78 10;
-  --highlight-active: 140 108 14;
+  --ink:                    237 224 204;
+  --ink-mid:                184 168 152;
+  --ink-lt:                 138 122 106;
+  --paper:                  24 20 16;
+  --surface:                34 28 22;
+  --rule:                   58 46 36;
+  --greek:                  196 135 74;
+  --greek-light:            44 30 10;
+  --modern:                 110 168 212;
+  --modern-light:           14 32 52;
+  --highlight:              100 78 10;
+  --highlight-active:       140 108 14;
+  --highlight-teal:         6 78 59;
+  --highlight-teal-active:  4 120 87;
 }
 
 /* ─── Base ─── */
@@ -120,6 +124,37 @@ mark[data-note-id].active {
   background: rgb(var(--highlight-active));
   outline: 2px solid rgb(var(--greek));
   outline-offset: 1px;
+}
+
+/* Teal highlight color */
+mark[data-note-id][data-color="teal"] {
+  background: rgb(var(--highlight-teal));
+}
+mark[data-note-id][data-color="teal"]:hover {
+  background: rgb(var(--highlight-teal-active));
+}
+mark[data-note-id][data-color="teal"].active {
+  background: rgb(var(--highlight-teal-active));
+  outline: 2px solid rgb(var(--modern));
+  outline-offset: 1px;
+}
+
+/* ─── Read mark line ─── */
+.read-mark-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  pointer-events: none;
+  z-index: 10;
+}
+.read-mark-line::before {
+  content: '';
+  flex: 1;
+  height: 0;
+  border-top: 2px dashed rgb(var(--greek) / 0.4);
 }
 
 /* ─── Selection popup caret triangles (themed) ─── */
