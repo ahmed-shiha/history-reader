@@ -53,15 +53,29 @@ export function getBookList(): BookSummary[] {
       const chapters = getChapterList(dir.name)
       if (chapters.length === 0) return null
       const first = chapters[0]
+      // Use the most recent chapter date for sorting; fall back to dir mtime
+      const latestDate =
+        chapters
+          .map((c) => c.date)
+          .filter(Boolean)
+          .sort()
+          .at(-1) ?? ''
       return {
         slug: dir.name,
         book_title: first.book_title || dir.name,
         author: first.author || '',
         description: first.description || '',
         chapter_count: chapters.length,
+        date: latestDate,
       } as BookSummary
     })
-    .filter(Boolean) as BookSummary[]
+    .filter(Boolean)
+    .sort((a, b) => {
+      // newest first
+      if (a!.date > b!.date) return -1
+      if (a!.date < b!.date) return 1
+      return 0
+    }) as BookSummary[]
 }
 
 export async function getChapter(

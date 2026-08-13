@@ -38,6 +38,7 @@ export interface BookSummary {
   author: string
   description: string
   chapter_count: number
+  date: string
 }
 
 export interface ChapterMeta {
