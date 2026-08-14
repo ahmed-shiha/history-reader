@@ -4,6 +4,7 @@ import { Tajawal } from 'next/font/google'
 import './globals.css'
 import 'katex/dist/katex.min.css'
 import ThemeToggle from '@/components/ThemeToggle'
+import ReadingTimer from '@/components/ReadingTimer'
 
 const tajawal = Tajawal({
   subsets: ['arabic', 'latin'],
@@ -54,12 +55,7 @@ export default function RootLayout({
               >
                 الملاحظات
               </Link>
-              <Link
-                href="/stats"
-                className="text-sm text-ink-mid hover:text-greek transition-colors px-3 py-1.5 rounded-md hover:bg-greek-light"
-              >
-                التقدُّم
-              </Link>
+              <ReadingTimer />
               <ThemeToggle />
             </div>
           </div>
