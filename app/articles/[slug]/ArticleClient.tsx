@@ -2,6 +2,7 @@
 import { useRef, useState, useCallback } from 'react'
 import type { ArticleMeta, Note, CreateNoteInput, NoteColor } from '@/lib/types'
 import { useNotes } from '@/hooks/useNotes'
+import { useScrollRestore } from '@/hooks/useScrollRestore'
 import SelectionPopup from '@/components/SelectionPopup'
 import NoteModal from '@/components/NoteModal'
 import ArticleHighlighter from '@/components/ArticleHighlighter'
@@ -38,6 +39,7 @@ export default function ArticleClient({
   meta,
   children,
 }: ArticleClientProps) {
+  useScrollRestore(`article:${slug}`)
   const { notes, addNote, deleteNote, updateNote } = useNotes(slug)
   const articleRef = useRef<HTMLDivElement>(null)
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null)

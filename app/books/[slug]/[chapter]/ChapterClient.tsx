@@ -1,5 +1,6 @@
 'use client'
 import { useRef, useState, useCallback } from 'react'
+import { useScrollRestore } from '@/hooks/useScrollRestore'
 import Link from 'next/link'
 import type { ChapterMeta, Note, CreateNoteInput, NoteColor } from '@/lib/types'
 import { useNotes } from '@/hooks/useNotes'
@@ -41,6 +42,7 @@ export default function ChapterClient({
   children,
 }: ChapterClientProps) {
   const noteKey = chapterNoteKey(bookSlug, chapterSlug)
+  useScrollRestore(`book:${bookSlug}/${chapterSlug}`)
   const { notes, addNote, deleteNote, updateNote } = useNotes(noteKey)
   const contentRef = useRef<HTMLDivElement>(null)
 
