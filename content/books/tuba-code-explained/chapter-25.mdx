@@ -1,0 +1,244 @@
+---
+slug: chapter-25
+title: "كل الـ systems في 10 دقايق"
+book_title: "Tuba Code Explained"
+book_slug: tuba-code-explained
+author: ""
+description: ""
+date: "2026-10-11"
+order: 25
+---
+9 workstreams · Q4 2026 – Q3 2027 · الأسامي هنا هي نفس الأسامي الإنجليزي المكتوبة في الشيت (Package و Goal و Deliverables)
+
+## الافتتاح
+
+1. يا جماعة، في 10 دقايق همشي على الـ 9 workstreams اللي في الشيت، واحد واحد.
+2. الخطة من Q4 2026 لحد Q3 2027، يعني 4 quarters.
+3. كل صف في الشيت مهمة شهر، وكل 3 صفوف بيكوّنوا package واحدة في quarter.
+4. المجموع 68 package، يعني 204 مهمة شهرية.
+5. في كل workstream هقول الـ Goal بتاع كل quarter، وأسامي المهام زي ما هي مكتوبة قدامكم.
+6. الترتيب العام للسنة واحد في كل الـ systems.
+7. Q4 2026 قياس وتأسيس، و Q1 2027 بُنا، و Q2 2027 ربط وتجربة على الحقيقي، و Q3 2027 release وتسليم.
+8. والـ Company Chatbot هو الوحيد اللي بيبدأ من Q1 2027.
+9. كل الـ packages حالتها Draft، والأرقام أهداف مقترحة لسه كل owner هيأكدها.
+10. نبدأ بأول workstream.
+
+## 1) Platform & Governance — Ahmed Taha
+
+11. أول workstream هو Platform & Governance، وده اللي بيقيس ويراقب كل الـ systems التانية.
+12. في Q4 2026 الـ package اسمها Shared evaluation harness and cost baseline.
+13. الـ Goal إن كل model يتقيّم بنفس الأداة وعلى blind set، والـ promotion يتمنع لوحده لو الرقم نزل.
+14. المهام التلاتة: Building the evaluation harness، وبعدين Onboarding the benchmarks and linking them to the release، وبعدين Cost pipeline and compliance file.
+15. والنجاح إن الـ harness يشغّل الـ 5 systems، وكل system ليه blind set.
+16. في Q1 2027 الـ package اسمها Shared monitoring platform and API security.
+17. الـ Goal إن كل system شغال live يتراقب من مكان واحد، وكل API مكشوف يعدّي security test حقيقي.
+18. المهام: Building the monitoring platform، و Quality and drift monitoring، و Securing and testing the APIs.
+19. في Q2 2027 الـ package اسمها Decision log, decision replay and unit cost.
+20. الـ Goal إن أي قرار AI نقدر نرجّعه ونعيد تشغيله ونعرف كلّف كام.
+21. المهام: Unified decision log، و Replay tool، و Unit cost and operations.
+22. والنجاح إن 100% من القرارات متسجّلة، و95% منها بتطلع نفس النتيجة لما تتعاد.
+23. في Q3 2027 الـ package اسمها Blind re-measurement of all systems and the 2028 plan.
+24. الـ Goal إن أرقام آخر السنة تطلع من داتا الـ models ما شافتهاش، وخطة 2028 تتبني عليها.
+25. المهام: New blind sets، و Security and continuity tests، و Model registry, periodic evaluation and the 2028 plan.
+26. والنجاح إن كل system يرجع في الـ DR drill في أقل من ساعتين.
+27. يعني الـ workstream ده بيمشي: نقيس، وبعدين نراقب، وبعدين نسجّل، وبعدين نثبت.
+28. وكل رقم دقة هتسمعوه في باقي العرض طالع من الـ harness ده.
+
+## 2) Data Warehouse — Mohammed Mosaad
+
+29. تاني workstream هو الـ Data Warehouse، وده أكبر واحد: 16 package.
+30. فيه 3 مهام ثابتة في كل quarter: Data collection، و Data analysis، و Dashboard.
+31. وجنبهم package خاصة في 3 quarters.
+32. في Q4 2026 الـ package الخاصة اسمها Transformation layer completion and secure ML access.
+33. الـ Goal إن الـ 3 layers شغالين، والـ models توصل للداتا المعتمدة بس وبشكل آمن.
+34. مهامها: Finishing the transformation layer، و Security layer on ClickHouse، و Publishing the ML datasets.
+35. والـ Data collection في نفس الـ quarter: Source inventory and inspection، و Building the first connectors، و Running the first pipelines.
+36. والنجاح فيها inventory لحوالي 20 مصدر، وأول 4 شغالين يومي.
+37. والـ Data analysis: Profiling and analysis environment، و Claims analysis، و Approvals and providers analysis.
+38. والـ Dashboard: Metrics layer، و Building the pages، و Automatic refresh, permissions and pilot، والنجاح 15 metric و3 صفحات.
+39. في Q1 2027 الـ Data collection اسمها first wave، وبتضيف 6 مصادر بـ reconciliation أقل من 0.5%.
+40. مهامها: Complete pipelines، و Orchestration and reconciliation، و Data catalog.
+41. والـ Data analysis عن rejection reasons and price differences: Decision analysis، و Price analysis، و Findings and metrics.
+42. والـ Dashboard بتبقى first version: Semantic layer، و Drill-down and permissions، والنجاح 30 metric وكل صفحة تفتح في أقل من 5 ثواني.
+43. في Q2 2027 الـ Data collection اسمها second wave and backfill: Second-priority sources، و Backfill، و Entity resolution.
+44. والنجاح 6 مصادر كمان، و backfill لـ 3 سنين، و entity resolution بدقة 95%.
+45. والـ Data analysis عن trends and anomaly detection، وبتسلّم 2 datasets للفرق.
+46. والـ Dashboard بتضيف Alerts و Self-service، والنجاح 10 alerts وأول 3 تقارير الإدارة بنتهم بنفسها.
+47. والـ package الخاصة هي Data quality and freshness: Freshness measurement، و Quality framework، و FindACode handover.
+48. في Q3 2027 الـ Data collection اسمها third wave and closing the gaps، والنجاح إن الـ 20 مصدر كلهم متحمّلين والـ claims بتوصل في أقل من ساعة.
+49. والـ Data analysis عن forecasts and the annual summary، والنجاح forecast error أقل من 15%.
+50. وفيه package مشروطة: Tuba data analysis، وشرطها إن Tuba تبقى في Production وعندها داتا.
+51. والـ Dashboard بتضيف Forecast pages، وبتعمل Clean-up and rebuild، وبتبعت Periodic reports.
+52. وآخر package هي Connecting the consumers and the data products، والـ Goal إن كل system ياخد داتته من الـ warehouse عن طريق governed channel.
+
+## 3) SBS Code & Service Mappings — Omar Adly
+
+53. تالت workstream هو SBS Code & Service Mappings، وده اللي بيوحّد قوايم أسعار الـ providers ويحط عليها أكواد.
+54. في Q4 2026 الـ package اسمها Pricelist editing, mapping rules and contracts.
+55. الـ Goal برنامج واحد يوحّد الـ pricelists ويعدّلها ويعمل map للخدمات، وعليه accuracy figures لأول مرة.
+56. المهام: Pricelist editing feature، و Linking SBS to the Service Mappings، و Measurement and fixing the contracts.
+57. والنجاح evaluation set من 50 ملف حقيقي، وأول رقم متقاس للـ column-match والـ imputation.
+58. في Q1 2027 الـ package اسمها Persistent stores and parallel workers.
+59. الـ Goal إن الخدمتين يستحملوا الـ restart، ويشغّلوا jobs كتير مع بعض، وقرارات الناس تفضل محفوظة.
+60. المهام: Migration، و Queue and workers، و Accuracy and versioning.
+61. والنجاح صفر jobs ضايعة بعد restart، والـ mapping top-3 يوصل 65%.
+62. في Q2 2027 الـ package اسمها APIs for prices and mapping, accuracy improvement and events.
+63. الـ Goal إن الـ systems التانية تعمل query على الأسعار والـ maps، وتوصلها التغييرات لوحدها.
+64. المهام: APIs and events، و Raising mapping accuracy، و Integration and analysis.
+65. والنجاح إن الـ unclear bucket ينزل من 87K لأقل من 50K، وتغطية 90% من الـ claims lines.
+66. في Q3 2027 الـ package اسمها Production, feeding the pricing, and operations.
+67. الـ Goal إن الخدمتين يبقوا على Production level ويغذّوا الـ pricing model.
+68. المهام: Feeding the pricing and the production API، و Hardening operations، و Quality and handover.
+69. والنجاح تغطية 95% من الـ claim lines، والـ load test يعدّي على full volume.
+70. يعني الـ workstream ده بيمشي: نظبط، وبعدين نقوّي، وبعدين نفتح APIs، وبعدين Production.
+
+## 4) Network Classification Model — Omar Adly
+
+71. رابع workstream هو الـ Network Classification Model، وده اللي بيصنّف الـ 4,017 provider.
+72. في Q4 2026 الـ package اسمها Pricelist signals, facility type calibration and model v1.
+73. الـ Goal إن كل provider من الـ 4,017 يبقى ليه facility type و price cluster و network tier بتعريف متفق عليه.
+74. المهام: Linking the prices and recalibration، و From price clusters to network tiers، و Delivery of v1.
+75. والنجاح إن الكل متصنّف، أو مكتوب سبب ليه لأ.
+76. في Q1 2027 الـ package اسمها Signal coverage and validation with a hand-labelled sample.
+77. الـ Goal إن جودة الـ tiers تتقاس بـ precision و recall لكل facility type.
+78. المهام: New signals، و Re-clustering، و Validation.
+79. والنجاح gold set من 200 provider، و precision و recall 85% لكل tier.
+80. في Q2 2027 الـ package اسمها Internal API and integration with the network composer.
+81. الـ Goal إن الـ platform تاخد تصنيف أي provider وشرحه عن طريق stable API.
+82. المهام: Classification API، و Refresh and catalogue matching، و Platform integration.
+83. والنجاح إن الـ API يرد في أقل من ثانيتين، وكل تصنيف معاه explanation.
+84. في Q3 2027 الـ package اسمها Integration with the Chatbot and drift monitoring.
+85. الـ Goal إن الـ Chatbot يستخدم tiers متراجعة، وأي تغيّر فيها متراقب.
+86. المهام: Chatbot tool and network suggestion، و Drift monitoring، و Re-measurement and handover.
+87. والنجاح إن الـ unclassified providers ينزلوا من 4.3% لأقل من 2%، والـ precision ما ينزلش عن 85% على عيّنة جديدة.
+88. والـ workstream ده بياخد أسعاره من SBS، وبيدّي تصنيفه للـ Chatbot.
+
+## 5) Tuba Doctor — MedGemma — Ahmed Taha
+
+89. خامس workstream هو Tuba Doctor، وفيه 12 package.
+90. فيه 3 خيوط: الخدمة نفسها، والـ fine-tuning، والـ Vision tower.
+91. في Q4 2026 أول package اسمها Production go-live, safety fixes and blind validation.
+92. الـ Goal إن Tuba Doctor يشتغل في Production عن طريق الـ AI Gateway، بـ safety rules متصلّحة ونسخة متراجعة على blind set.
+93. مهامها: Production and Gateway readiness، و Safety fixes، و Validation and champion selection.
+94. والنجاح أول claim كامل في Production عن طريق الـ Gateway، و unnecessary escalation أقل من 5%.
+95. وتاني package اسمها Training data foundation for fine-tuning: Approval and de-identification، و Labelling protocol، و Building the dataset.
+96. والنجاح فيها 500 reviewed claims، وصفر personal data في العيّنة.
+97. في Q1 2027 أول package اسمها Medical guardrails, monitoring and payer rules.
+98. مهامها: Guardrails and rules، و Monitoring and feedback loop، و Benchmarks and throughput.
+99. والنجاح إن الـ accuracy على الـ blind set تطلع من 74% لـ 85%، و15 claim مع بعض من غير انتظار.
+100. وتاني package هي MedGemma fine-tuning — first round: Training preparation، و Training rounds، و Comparison and safety.
+101. والنجاح إن النسخة المتدرّبة تبقى أعلى من الـ prompt-only بـ 3 نقط على الأقل، وتعدّي الـ safety regression.
+102. وتالت package هي Vision tower — attachment collection and measurement of the current state، والنجاح 300 labelled attachments.
+103. في Q2 2027 فيه 4 packages، وده أتقل quarter.
+104. الأولى FindACode, shadow testing and onboarding of the first TPA، والـ Goal إن أي داتا أو نسخة جديدة تثبت نفسها على real claims قبل ما تبقى live.
+105. التانية MedGemma fine-tuning — second round and shadow test، والنجاح 1,000 claim في الـ shadow و release decision موقّع من دكتور.
+106. التالتة Vision tower — improvement، والنجاح إن الـ reading accuracy تطلع 10 نقط في أضعف نوعين.
+107. الرابعة Larger LLM — candidate selection and preparation، والنجاح مرشح واحد مختار ومعاه تكلفته الشهرية.
+108. في Q3 2027 أول package اسمها Model evidence, audit and resilience.
+109. مهامها: CHI data and benchmark v2، و Audit pack and observability، و Resilience and newer models.
+110. والنجاح إن الـ failover يرجّع الخدمة في أقل من 30 دقيقة.
+111. وتاني package هي Larger LLM — full fine-tuning, comparison and decision، والـ Goal قرار واضح للإدارة: replace MedGemma or not.
+112. وتالت package هي Vision tower — retest and release، والـ Goal إن النسخة المحسّنة تبقى في Production ومتراقبة.
+
+## 6) Tuba Code — Mohammed Mohsen
+
+113. سادس workstream هو Tuba Code، وده لغة واحدة لكل أنظمة الأكواد الطبية، وفيه 11 package.
+114. في Q4 2026 الـ package اسمها Coding foundation: the language, ICD-10 and first Coding Agent.
+115. الـ Goal إن لغة Tuba Code تتصمّم وتشتغل على ICD-10، وأول Coding Agent يبقى عليه accuracy figure.
+116. المهام: Language design، و First coverage and the Coding Agent، و Codebook v1 and measurement.
+117. والنجاح gold set من 300 document.
+118. في Q1 2027 فيه 4 packages.
+119. الأولى Coding Agent v2 and the API: Raising agent accuracy، و Document formats، و API and code updates.
+120. والنجاح إن الـ accuracy تطلع 10 نقط، والـ API يستخدمه فريق تاني واحد على الأقل.
+121. التانية Mapping: ICD-10-AM ↔ ICD-10-CM، والنجاح error 5% أو أقل على 500 code في كل اتجاه.
+122. التالتة Mapping: SBS ↔ ACHI، والنجاح 100% من الأكواد المضافة والمعدّلة متراجعة.
+123. الرابعة Mapping: SBS ↔ CPT، والـ Goal إن علاقة كل SBS procedure بـ CPT تبقى معروفة: one-to-one، أو one-to-many، أو no equivalent.
+124. في Q2 2027 فيه 4 packages كمان.
+125. الأولى Multimodal coding in Arabic and Codebook v2: Audio path، و Image and Arabic path، و Codebook v2.
+126. والـ Goal إن الـ Coding Agent يشتغل على audio و images و Arabic notes، وكل modality عليها accuracy figure.
+127. التانية Mapping: ICD-10 ↔ ICD-11، وده أصعب mapping، والنجاح error 7% أو أقل على 500 code.
+128. التالتة Mapping: CPT ↔ HCPCS، والنجاح إن كل J-code مربوط بـ active ingredient.
+129. الرابعة Grouper: diagnosis and procedures → DRG، والنجاح 95% match على 300 case.
+130. في Q3 2027 فيه 2 packages.
+131. الأولى Translation Agent, fraud detection and archive: Translation Agent، و Fraud detection and archive، و Codebook v3 and the pilot.
+132. والنجاح إن 98% من الأكواد ترجع زي ما هي في الـ round-trip، و pilot شغال مع provider.
+133. التانية Closing the mappings: consistency of all standards with Tuba Code.
+134. مهامها Consistency test، و Resolving the conflicts، و Maintenance and versions، والنجاح صفر open conflicts في الأكواد اللي بتغطّي 95% من الـ claims.
+
+## 7) Actuarial Pricing Model — Yossef Algammal
+
+135. سابع workstream هو الـ Actuarial Pricing Model، وده اللي بيحسب قسط التأمين للشركات.
+136. فيه خيطين: الـ model الحسابي، والـ LLM اللي بيشرح ويدوّر.
+137. في Q4 2026 أول package اسمها Code review, price analysis and error baseline.
+138. الـ Goal إن الـ model الحالي يتراجع ويتعاد تشغيله من الأول، وغلطه يبقى معروف لكل segment.
+139. مهامها: Independent code review، و Price analysis and business decisions، و Error baseline.
+140. وتاني package هي LLM study for pricing and medical service prices — part one: Use cases، و Test set، و Experiment environment.
+141. والنجاح فيها 200 سؤال بإجاباتهم، و harness شغال.
+142. في Q1 2027 أول package اسمها Company-level factors, small-company treatment and price breakdown.
+143. مهامها: Features and retraining، و Loadings and small companies، و Price breakdown.
+144. والنجاح إن الـ error يقل 15% عن الـ baseline، و25% في الـ small companies.
+145. وتاني package هي LLM study for pricing — comparison of APIs, agents and fine-tuning, and the decision.
+146. والنجاح فيها written decision بالاختيار ومعاه الأرقام.
+147. في Q2 2027 أول package اسمها Back-tests, what-if analysis and pricing manager chat.
+148. الـ Goal إن الـ model يتثبت قدام real quotes، ومدير الـ pricing يقدر يعدّل الـ plan بالكلام.
+149. والنجاح إن السعر يبقى جوه ±10% من الفعلي في 80% من الـ segments.
+150. وتاني package هي Medical service prices LLM — data and build: Price dataset، و Building the selected option، و Testing and guardrails.
+151. والنجاح فيها 90% correct answers، وصفر prices without a source.
+152. في Q3 2027 أول package اسمها Assisted pricing, renewal and the live API.
+153. الـ Goal إن الـ pricing يطلع كخدمة فيها human review، ويتعلّم من نتايج الـ quotes.
+154. مهامها: Assisted-quote service، و Renewal and feedback، و Live API and shadow mode.
+155. وتاني package هي Pricing LLM — evaluation with the underwriters and internal release، والنجاح إن فريق الـ pricing يستخدمه weekly و90% من إجاباته تعدّي من غير تصحيح.
+156. وفيه package واحدة مؤجّلة لبعد Q3 2027: Reading the medical disclosure (free text)، ومعادها يتحدد لما 3 شروط يتحققوا.
+
+## 8) Coding Agents — Omar Adly
+
+157. تامن workstream هو Coding Agents، وده مساعد AI بيكتب كود لفرق الشركة، والإنسان هو اللي بيعمل الـ merge.
+158. في Q4 2026 الـ package اسمها Roles inventory, routing and a measured pilot.
+159. الـ Goal إن كل فريق يبقى ليه working route، والـ engineering workflow يتثبت على real tickets وعليه أرقام.
+160. المهام: Roles and routing، و Workflow on real tickets، و Metrics and safety.
+161. والنجاح 30 real tickets عدّوا الـ workflow، وصفر merge أو delete في الـ safety set.
+162. في Q1 2027 الـ package اسمها Review loop, checks and durable queue.
+163. الـ Goal إن الـ workflow يستحمل ضياع أي event، والـ repository checks تبقى شرط قبل الـ MR.
+164. المهام: Review loop and checks، و Durable queue، و Parallel running and permissions.
+165. والنجاح صفر lost events، و60% من الـ MRs بتتعمل merge من غير rework.
+166. في Q2 2027 الـ package اسمها Managed runtime, events and fallback notification path.
+167. الـ Goal إن الـ agent يشتغل كـ managed service، والـ notifications ما تعتمدش على رقم واحد.
+168. المهام: Managed service، و Events and notifications، و Quality and cost.
+169. والنجاح 99% uptime، وتكلفة كل MR معروفة.
+170. في Q3 2027 الـ package اسمها Scale to the seven teams and handover.
+171. الـ Goal إن الـ agent يشتغل على الـ full ticket volume جوه cost limits، ويتسلّم بـ runbook.
+172. المهام: Onboarding the teams one by one، و Load and alerts، و Quality and handover.
+173. والنجاح إن الـ 7 فرق شغالين، والتكلفة جوه الـ caps.
+174. يعني بيمشي: pilot متقاس، وبعدين workflow متين، وبعدين managed service، وبعدين الـ 7 فرق.
+
+## 9) Company Chatbot — Youssef
+
+175. آخر workstream هو الـ Company Chatbot، وبيبدأ من Q1 2027.
+176. في Q1 2027 فيه 2 packages.
+177. الأولى Scope, RAG pipeline and safety layer.
+178. الـ Goal chatbot أولي بيجاوب من الـ documentation بالعربي والإنجليزي، وعليه tested safety limits.
+179. مهامها: Use cases and safety layer، و RAG pipeline، و Orchestration and red-team.
+180. والنجاح إن الـ retrieval يجيب المقطع الصح في الـ top 3 بنسبة 85%، وصفر successful red-team attempts.
+181. التانية Bilingual knowledge base and test set: Content، و Test set، و Permission tests.
+182. والنجاح فيها 300 سؤال بإجاباتهم، و80% correct answers بتقييم الناس.
+183. في Q2 2027 الـ package اسمها Internal beta, handover to a human and integration.
+184. الـ Goal إن الـ Chatbot يتجرّب مع مستخدمين جوه الشركة، والـ integration contracts مع الـ systems التانية تتأكد.
+185. المهام: Beta، و Improvement and handover to a human، و Tools and flows.
+186. والنجاح 30 مستخدم في الـ beta، و85% correct answers.
+187. في Q3 2027 الـ package اسمها Release, integration and measurement.
+188. الـ Goal إن الـ Chatbot ينزل لـ platform users في الـ ready flows، وعليه satisfaction and resolution figures.
+189. المهام: Integration with the systems، و Load, cost and release، و Measurement and handover.
+190. والنجاح إن 60% على الأقل من الـ conversations تتحل من غير handover to a human.
+
+## الختام
+
+191. كده عدّينا على الـ 9 workstreams.
+192. لو بصّينا عليهم مع بعض، فيه 4 حاجات مشتركة.
+193. الأولى إن كل system بيبدأ بقياس: blind set، أو gold set، أو evaluation set، أو error baseline.
+194. التانية إن في Tuba Doctor والـ Pricing، مفيش نسخة جديدة بتنزل Production من غير shadow test على داتا حقيقية.
+195. التالتة إن فيه human review في كل قرار مهم: الدكتور، والـ coder، والـ underwriter، والـ reviewer.
+196. الرابعة إن الـ systems مربوطة ببعض: الـ Data Warehouse بيغذّي الكل، و SBS بيغذّي الـ Network والـ Pricing، والاتنين بيغذّوا الـ Chatbot.
+197. والخطة محتاجة 3 حاجات من برا الفريق: موافقات الـ compliance، ووقت الدكاترة والـ coders والـ underwriters، والـ GPU للتدريب.
+198. والأرقام كلها أهداف مقترحة، والحالة Draft لحد ما كل owner يأكد الـ packages بتاعته.
+199. والتفاصيل شهر بشهر موجودة في عمود الـ Deliverables قدام كل صف.
+200. لو فيه أسئلة على أي workstream، اتفضّلوا.
